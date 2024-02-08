@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension LhQuery {
+public extension Query {
     enum HeardQuery {
         case queryHeard(String)
 

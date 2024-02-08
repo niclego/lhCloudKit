@@ -6,15 +6,17 @@
 //
 
 import Foundation
+import CloudKit
 
-final class LhCloudKitMock: CloudKitable {
+public struct LhCloudKitMock: CloudKitable {
     let containerId: String
 
-    init(containerId: String) {
-        self.containerId = containerId
+    public init() {
+        self.containerId = "MOCK_CONTAINER_ID"
     }
 
-    func query<T: CloudKitRecordable>(_ query: LhQuery) async throws -> [T] { [T.mock] }
-    func save<T: CloudKitRecordable>(model: T, db: LhDatabase) async throws -> T { T.mock }
-    func fetchUserRecordIdString() async throws -> String { "TESTUSERID1234" }
+    public func query<T: CloudKitRecordable>(_ query: Query) async throws -> [T] { [T.mock] }
+    public func save(record: CKRecord, db: LhDatabase) async throws -> CKRecord { .init(recordType: "nil")  }
+    public func record(for recordId: CKRecord.ID, db: LhDatabase) async throws -> CKRecord { .init(recordType: "nil") }
+    public func selfRecordId() async throws -> CKRecord.ID { return .init(recordName: "Test") }
 }

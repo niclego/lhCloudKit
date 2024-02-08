@@ -5,7 +5,7 @@
 //  Created by Nicolas Le Gorrec on 2/4/24.
 //
 
-enum LhQuery {
+public enum Query {
     case heard(HeardQuery)
     case user(UserQuery)
 

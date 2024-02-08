@@ -7,8 +7,8 @@
 
 import CloudKit
 
-protocol CloudKitRecordable {
-    init(record: CKRecord) throws
+public protocol CloudKitRecordable {
+    init?(record: CKRecord)
     var record: CKRecord { get }
     static var mock: Self { get }
 }

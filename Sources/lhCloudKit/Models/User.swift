@@ -7,38 +7,38 @@
 
 import CloudKit
 
-struct User {
+public struct User {
     let recordId: CKRecord.ID?
-    let username: String
+    public let lhUserRecordName: String?
 
-    init(
+    public init(
         recordId: CKRecord.ID? = nil,
-        username: String
+        lhUserRecordName: String?
     ) {
         self.recordId = recordId
-        self.username = username
+        self.lhUserRecordName = lhUserRecordName
     }
 }
 
 extension User: CloudKitRecordable {
-    init(record: CKRecord) throws {
-        let username = record[UserRecordKeys.username.rawValue] as! String
-        self.init(recordId: record.recordID, username: username)
+    public init?(record: CKRecord) {
+        guard let lhUserRecordName = record[UserRecordKeys.lhUserRecordName.rawValue] as? String else { return nil }
+        self.init(recordId: record.recordID, lhUserRecordName: lhUserRecordName)
     }
-    
-    var record: CKRecord {
+
+    public var record: CKRecord {
         let record = CKRecord(recordType: UserRecordKeys.type.rawValue)
+        record[UserRecordKeys.lhUserRecordName.rawValue] = lhUserRecordName
         return record
     }
-    
-    static var mock: User = .init(username: "test_user")
+
+    public static var mock: User = .init(lhUserRecordName: "lhUserRecordName_mock")
 }
 
-extension User {
+public extension User {
     enum UserRecordKeys: String {
-        case type = "User"
-        case username
-        case userRecordId
+        case type = "Users"
+        case lhUserRecordName
     }
 }
 

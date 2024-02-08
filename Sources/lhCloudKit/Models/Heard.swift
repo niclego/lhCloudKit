@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct Heard {
+public struct Heard {
     let recordId: CKRecord.ID?
     let authorId: String
 
@@ -21,18 +21,18 @@ struct Heard {
 }
 
 extension Heard: CloudKitRecordable {
-    init(record: CKRecord) throws {
-        let authorId = record[HeardRecordKeys.authorId.rawValue] as! String
+    public init?(record: CKRecord) {
+        guard let authorId = record[HeardRecordKeys.authorId.rawValue] as? String else { return nil }
         self.init(recordId: record.recordID, authorId: authorId)
     }
 
-    var record: CKRecord {
+    public var record: CKRecord {
         let record = CKRecord(recordType: HeardRecordKeys.type.rawValue)
         record[HeardRecordKeys.authorId.rawValue] = authorId
         return record
     }
 
-    static var mock: Heard = .init(authorId: "testId")
+    public static var mock: Heard = .init(authorId: "testId")
 }
 
 extension Heard {

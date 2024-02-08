@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import CloudKit
 
-protocol CloudKitable {
-    init(containerId: String)
-    func query<T: CloudKitRecordable>(_ query: LhQuery) async throws -> [T]
-    func save<T: CloudKitRecordable>(model: T, db: LhDatabase) async throws -> T
-    func fetchUserRecordIdString() async throws -> String
+public protocol CloudKitable {
+    func query<T: CloudKitRecordable>(_ query: Query) async throws -> [T]
+    func save(record: CKRecord, db: LhDatabase) async throws -> CKRecord
+    func record(for recordId: CKRecord.ID, db: LhDatabase) async throws -> CKRecord
+    func selfRecordId() async throws -> CKRecord.ID
 }
 
 struct CloudKitQuery {

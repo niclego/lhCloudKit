@@ -7,23 +7,19 @@
 
 import Foundation
 
-extension LhQuery {
+public extension Query {
     enum UserQuery {
-        case queryUsers(String)
+        case allLhUsers
 
         var query: CloudKitQuery {
             switch self {
-            case .queryUsers(let username):
-                return queryUsers(username: username)
+            case .allLhUsers:
+                return queryAllLhUsers()
             }
         }
 
-        private func queryUsers(username: String) -> CloudKitQuery {
-            let type = User.UserRecordKeys.type.rawValue
-            let sortDescriptorKey = "username"
-            let predicate = NSPredicate(value: true)
-
-            return .init(recordType: type, sortDescriptorKey: sortDescriptorKey, predicate: predicate, database: .pubDb)
+        private func queryAllLhUsers() -> CloudKitQuery {
+            return .init(recordType: LhUser.LhUserRecordKeys.type.rawValue, sortDescriptorKey: nil, predicate: nil, database: .pubDb)
         }
     }
 }
