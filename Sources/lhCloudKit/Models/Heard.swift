@@ -9,35 +9,82 @@ import CloudKit
 
 public struct Heard {
     let recordId: CKRecord.ID?
-    let authorId: String
+    public let authorRecordName: String
+    public let musicItemId: String
+    public let created: Int
+    public let description: String?
+    public let venueRecordName: String?
 
-    init(
+    public init(
         recordId: CKRecord.ID? = nil,
-        authorId: String
+        authorRecordName: String,
+        musicItemId: String,
+        created: Int,
+        description: String?,
+        venueRecordName: String?
     ) {
         self.recordId = recordId
-        self.authorId = authorId
+        self.authorRecordName = authorRecordName
+        self.musicItemId = musicItemId
+        self.created = created
+        self.description = description
+        self.venueRecordName = venueRecordName
     }
 }
 
 extension Heard: CloudKitRecordable {
     public init?(record: CKRecord) {
-        guard let authorId = record[HeardRecordKeys.authorId.rawValue] as? String else { return nil }
-        self.init(recordId: record.recordID, authorId: authorId)
+        guard 
+            let authorRecordName = record[HeardRecordKeys.authorRecordName.rawValue] as? String,
+            let musicItemId = record[HeardRecordKeys.musicItemId.rawValue] as? String,
+            let created = record[HeardRecordKeys.created.rawValue] as? Int
+        else { return nil }
+
+        let description = record[HeardRecordKeys.description.rawValue] as? String
+        let venueRecordName = record[HeardRecordKeys.venueRecordName.rawValue] as? String
+
+        self.init(
+            recordId: record.recordID,
+            authorRecordName: authorRecordName,
+            musicItemId: musicItemId,
+            created: created,
+            description: description,
+            venueRecordName: venueRecordName
+        )
     }
 
     public var record: CKRecord {
         let record = CKRecord(recordType: HeardRecordKeys.type.rawValue)
-        record[HeardRecordKeys.authorId.rawValue] = authorId
+        record[HeardRecordKeys.authorRecordName.rawValue] = authorRecordName
+        record[HeardRecordKeys.musicItemId.rawValue] = musicItemId
+        record[HeardRecordKeys.created.rawValue] = created
+        record[HeardRecordKeys.description.rawValue] = description
+        record[HeardRecordKeys.venueRecordName.rawValue] = venueRecordName
         return record
     }
 
-    public static var mock: Heard = .init(authorId: "testId")
+    public static var mock: Heard = .init(
+        authorRecordName: "testId",
+        musicItemId: "testMusicItemId",
+        created: 1234567890,
+        description: "test description",
+        venueRecordName: "testVenueRecordName"
+    )
 }
 
 extension Heard {
     enum HeardRecordKeys: String {
         case type = "Heard"
-        case authorId
+        case authorRecordName
+        case musicItemId
+        case created
+        case description
+        case venueRecordName
+    }
+}
+
+extension Heard: Identifiable {
+    public var id: String {
+        authorRecordName + musicItemId + String(created)
     }
 }

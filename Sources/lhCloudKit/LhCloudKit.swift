@@ -15,7 +15,7 @@ public enum LhDatabase {
 public enum CloudKitError: Error {
     case lhUserAlreadyExistsForSystemUser
     case lhUserDoesNotExistForSystemUser
-    case usernameAlreadyExistsForUser
+    case usernameAlreadyTaken
     case badRecordData
 }
 
