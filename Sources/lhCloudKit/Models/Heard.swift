@@ -11,6 +11,7 @@ public struct Heard {
     let recordId: CKRecord.ID?
     public let authorRecordName: String
     public let musicItemId: String
+    public let musicItemTypeId: String
     public let created: Int
     public let description: String?
     public let venueRecordName: String?
@@ -19,6 +20,7 @@ public struct Heard {
         recordId: CKRecord.ID? = nil,
         authorRecordName: String,
         musicItemId: String,
+        musicItemTypeId: String,
         created: Int,
         description: String?,
         venueRecordName: String?
@@ -26,6 +28,7 @@ public struct Heard {
         self.recordId = recordId
         self.authorRecordName = authorRecordName
         self.musicItemId = musicItemId
+        self.musicItemTypeId = musicItemTypeId
         self.created = created
         self.description = description
         self.venueRecordName = venueRecordName
@@ -37,6 +40,7 @@ extension Heard: CloudKitRecordable {
         guard 
             let authorRecordName = record[HeardRecordKeys.authorRecordName.rawValue] as? String,
             let musicItemId = record[HeardRecordKeys.musicItemId.rawValue] as? String,
+            let musicItemTypeId = record[HeardRecordKeys.musicItemTypeId.rawValue] as? String,
             let created = record[HeardRecordKeys.created.rawValue] as? Int
         else { return nil }
 
@@ -47,6 +51,7 @@ extension Heard: CloudKitRecordable {
             recordId: record.recordID,
             authorRecordName: authorRecordName,
             musicItemId: musicItemId,
+            musicItemTypeId: musicItemTypeId,
             created: created,
             description: description,
             venueRecordName: venueRecordName
@@ -57,6 +62,7 @@ extension Heard: CloudKitRecordable {
         let record = CKRecord(recordType: HeardRecordKeys.type.rawValue)
         record[HeardRecordKeys.authorRecordName.rawValue] = authorRecordName
         record[HeardRecordKeys.musicItemId.rawValue] = musicItemId
+        record[HeardRecordKeys.musicItemTypeId.rawValue] = musicItemTypeId
         record[HeardRecordKeys.created.rawValue] = created
         record[HeardRecordKeys.description.rawValue] = description
         record[HeardRecordKeys.venueRecordName.rawValue] = venueRecordName
@@ -66,6 +72,7 @@ extension Heard: CloudKitRecordable {
     public static var mock: Heard = .init(
         authorRecordName: "testId",
         musicItemId: "testMusicItemId",
+        musicItemTypeId: "song",
         created: 1234567890,
         description: "test description",
         venueRecordName: "testVenueRecordName"
@@ -80,11 +87,6 @@ extension Heard {
         case created
         case description
         case venueRecordName
-    }
-}
-
-extension Heard: Identifiable {
-    public var id: String {
-        authorRecordName + musicItemId + String(created)
+        case musicItemTypeId
     }
 }

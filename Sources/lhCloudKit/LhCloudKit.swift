@@ -35,7 +35,7 @@ public struct LhCloudKit: CloudKitable {
     public func query<T: CloudKitRecordable>(_ query: Query) async throws -> [T] {
         let query = query.query
         let ckQuery = CKQuery(recordType: query.recordType, predicate: query.predicate ?? NSPredicate(value: true))
-        ckQuery.sortDescriptors = [NSSortDescriptor(key: query.sortDescriptorKey, ascending: true)]
+        ckQuery.sortDescriptors = [NSSortDescriptor(key: query.sortDescriptorKey, ascending: false)]
         let result = try await records(for: ckQuery, to: query.database)
         let records = result.matchResults.compactMap { try? $0.1.get() }
         let models = records.compactMap { T(record: $0) }
