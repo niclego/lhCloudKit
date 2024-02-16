@@ -6,22 +6,23 @@
 //
 
 import Foundation
+import CloudKit
 
 public extension Query {
     enum HeardQuery {
-        case getAllHeardModels
+        case getHeardActivityFeed([String])
 
         var query: CloudKitQuery {
             switch self {
-            case .getAllHeardModels:
-                return getAllHeardModels()
+            case .getHeardActivityFeed(let followingRecordNames):
+                return getAllHeardModels(for: followingRecordNames)
             }
         }
 
-        private func getAllHeardModels() -> CloudKitQuery {
+        private func getAllHeardModels(for followingRecordNames: [String]) -> CloudKitQuery {
             let type = Heard.HeardRecordKeys.type.rawValue
             let sortDescriptorKey = Heard.HeardRecordKeys.created.rawValue
-            let predicate = NSPredicate(value: true)
+            let predicate = NSPredicate(format: "authorRecordName IN %@", followingRecordNames)
             return .init(recordType: type, sortDescriptorKey: sortDescriptorKey, predicate: predicate, database: .pubDb)
         }
     }

@@ -24,7 +24,7 @@ public struct HeardManager {
         return heardModel
     }
 
-    public func getAllHeardModels() async throws -> [Heard] {
-        return try await ck.query(.heard(.getAllHeardModels))
+    public func getHeardActivityFeed(for followingRecordNames: [String]) async throws -> [Heard] {
+        return try await ck.query(.heard(.getHeardActivityFeed(followingRecordNames)))
     }
 }
