@@ -41,18 +41,26 @@ public struct UserManager {
         return (systemUser, systemUserRecord)
     }
 
-    public func getSelfLhUser() async throws -> (LhUser, CKRecord) {
+    private func getSelfLhUser() async throws -> (LhUser, CKRecord) {
         let (sysUser, _) = try await getSystemUser()
         guard let recordName = sysUser.lhUserRecordName else { throw CloudKitError.lhUserDoesNotExistForSystemUser }
         let (lHUser, lhUserRecord) = try await getLhUserByRecordName(recordName)
         return (lHUser, lhUserRecord)
     }
 
-    public func getLhUserByRecordName(_ lhUserRecordName: String) async throws -> (LhUser, CKRecord) {
+    public func getSelfLhUser() async throws -> LhUser {
+        return try await getSelfLhUser().0
+    }
+
+    private func getLhUserByRecordName(_ lhUserRecordName: String) async throws -> (LhUser, CKRecord) {
         let lhUserRecordId = CKRecord.ID(recordName: lhUserRecordName)
         let lhUserRecord = try await ck.record(for: lhUserRecordId, db: .pubDb)
         guard let lhUser = LhUser(record: lhUserRecord) else { throw CloudKitError.badRecordData }
         return (lhUser, lhUserRecord)
+    }
+
+    public func getLhUserByRecordName(_ lhUserRecordName: String) async throws -> LhUser {
+        return try await getLhUserByRecordName(lhUserRecordName).0
     }
 
     private func getLhUsersByRecordNames(_ lhUserRecordNames: [String]) async throws -> [LhUser] {
@@ -70,28 +78,37 @@ public struct UserManager {
     public func getSelfFollowers() async throws -> [LhUser] {
         let selfUser = try await getSelfLhUser().0
         guard let selfUserRecordName = selfUser.recordId?.recordName else { throw UserManagerError.selfUserNoRecordIdFound }
-        return try await ck.query(.user(.getFollowers(selfUserRecordName)))
+        let result = try await ck.records(for: .user(.getFollowers(selfUserRecordName)), resultsLimit: nil, db: .pubDb)
+        let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
+        return followers
     }
 
     public func getFollowers(for username: String) async throws -> [LhUser] {
         let user = try await getLhUserByUsername(username)
         guard let userRecordName = user.recordId?.recordName else { throw UserManagerError.noRecordIdFoundForUser }
-        return try await ck.query(.user(.getFollowers(userRecordName)))
+        let result = try await ck.records(for: .user(.getFollowers(userRecordName)), resultsLimit: nil, db: .pubDb)
+        let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
+        return followers
     }
 
     public func getLhUserByUsername(_ username: String) async throws -> LhUser {
-        let users: [LhUser] = try await ck.query(.user(.getByUsername(username)))
+        let result = try await ck.records(for: .user(.getByUsername(username)), resultsLimit: nil, db: .pubDb)
+        let users = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
         guard users.count == 1 else { throw UserManagerError.multipleUsersWithUsername }
         guard let user = users.first else { throw UserManagerError.noUserForUsernameFound }
         return user
     }
 
     public func searchLhUsersByUsername(_ username: String) async throws -> [LhUser] {
-        return try await ck.query(.user(.searchByUsername(username)))
+        let result = try await ck.records(for: .user(.searchByUsername(username)), resultsLimit: nil, db: .pubDb)
+        let users = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
+        return users
     }
 
     public func getAllLhUsers() async throws -> [LhUser] {
-        return try await ck.query(.user(.allLhUsers))
+        let result =  try await ck.records(for: .user(.allLhUsers), resultsLimit: nil, db: .pubDb)
+        let users = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
+        return users
     }
 
     public func updateSelfLhUser(with user: LhUser) async throws -> LhUser {
