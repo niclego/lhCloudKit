@@ -8,6 +8,7 @@
 public enum Query {
     case heard(HeardQuery)
     case user(UserQuery)
+    case venue(VenueQuery)
 
     var query: CloudKitQuery {
         switch self {
@@ -15,6 +16,8 @@ public enum Query {
             heardQuery.query
         case .user(let userQuery):
             userQuery.query
+        case .venue(let venueQuery):
+            venueQuery.query
         }
     }
 }
