@@ -22,7 +22,7 @@ public struct User {
 
 extension User: CloudKitRecordable {
     public init?(record: CKRecord) {
-        guard let lhUserRecordName = record[UserRecordKeys.lhUserRecordName.rawValue] as? String else { return nil }
+        let lhUserRecordName = record[UserRecordKeys.lhUserRecordName.rawValue] as? String
         self.init(recordId: record.recordID, lhUserRecordName: lhUserRecordName)
     }
 

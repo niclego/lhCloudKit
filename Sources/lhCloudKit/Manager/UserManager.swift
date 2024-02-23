@@ -22,15 +22,19 @@ public struct UserManager {
         self.ck = ck
     }
 
-    public func createLhUser() async throws -> LhUser {
+    private func createLhUser() async throws -> (LhUser, CKRecord) {
         let (systemUser, systemUserRecord) = try await getSystemUser()
         guard systemUser.lhUserRecordName == nil else { throw CloudKitError.lhUserAlreadyExistsForSystemUser }
         let user = LhUser(username: nil, followingLhUserRecordNames: [])
-        let lhUser = try await ck.save(record: user.record, db: .pubDb)
-        systemUserRecord[User.UserRecordKeys.lhUserRecordName.rawValue] = lhUser.recordID.recordName
-        let record = try await ck.save(record: systemUserRecord, db: .pubDb)
-        guard let lhUser = LhUser(record: record) else { throw CloudKitError.badRecordData }
-        return lhUser
+        let lhUserRecord = try await ck.save(record: user.record, db: .pubDb)
+        systemUserRecord[User.UserRecordKeys.lhUserRecordName.rawValue] = lhUserRecord.recordID.recordName
+        let _ = try await ck.save(record: systemUserRecord, db: .pubDb)
+        guard let lhUser = LhUser(record: lhUserRecord) else { throw CloudKitError.badRecordData }
+        return (lhUser, lhUserRecord)
+    }
+
+    public func createLhUser() async throws -> LhUser {
+        return try await createLhUser().0
     }
 
     private func getSystemUser() async throws -> (User, CKRecord) {
@@ -43,7 +47,11 @@ public struct UserManager {
 
     private func getSelfLhUser() async throws -> (LhUser, CKRecord) {
         let (sysUser, _) = try await getSystemUser()
-        guard let recordName = sysUser.lhUserRecordName else { throw CloudKitError.lhUserDoesNotExistForSystemUser }
+
+        guard let recordName = sysUser.lhUserRecordName else {
+            return try await createLhUser()
+        }
+
         let (lHUser, lhUserRecord) = try await getLhUserByRecordName(recordName)
         return (lHUser, lhUserRecord)
     }
