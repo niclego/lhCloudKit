@@ -9,12 +9,12 @@ import CloudKit
 
 public struct LhUser {
     public let recordId: CKRecord.ID?
-    public let username: String?
+    public let username: String
     public let followingLhUserRecordNames: [String]
 
     public init(
         recordId: CKRecord.ID? = nil,
-        username: String?,
+        username: String,
         followingLhUserRecordNames: [String]
     ) {
         self.recordId = recordId
@@ -25,7 +25,7 @@ public struct LhUser {
 
 extension LhUser: CloudKitRecordable {
     public init?(record: CKRecord) {
-        let username = record[LhUserRecordKeys.username.rawValue] as? String
+        guard let username = record[LhUserRecordKeys.username.rawValue] as? String else { return nil }
         let followingLhUserRecordNames = record[LhUserRecordKeys.followingLhUserRecordNames.rawValue] as? [String] ?? []
         self.init(recordId: record.recordID, username: username, followingLhUserRecordNames: followingLhUserRecordNames)
     }

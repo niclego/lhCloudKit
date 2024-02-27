@@ -22,10 +22,15 @@ public struct UserManager {
         self.ck = ck
     }
 
+    private func randomString(length: Int) -> String {
+      let letters = "0123456789abcdefgABCDEFG"
+      return String((0..<length).map{ _ in letters.randomElement()! })
+    }
+
     private func createLhUser() async throws -> (LhUser, CKRecord) {
         let (systemUser, systemUserRecord) = try await getSystemUser()
         guard systemUser.lhUserRecordName == nil else { throw CloudKitError.lhUserAlreadyExistsForSystemUser }
-        let user = LhUser(username: nil, followingLhUserRecordNames: [])
+        let user = LhUser(username: "user-\(randomString(length: 8))", followingLhUserRecordNames: [])
         let lhUserRecord = try await ck.save(record: user.record, db: .pubDb)
         systemUserRecord[User.UserRecordKeys.lhUserRecordName.rawValue] = lhUserRecord.recordID.recordName
         let _ = try await ck.save(record: systemUserRecord, db: .pubDb)
@@ -74,7 +79,9 @@ public struct UserManager {
     private func getLhUsersByRecordNames(_ lhUserRecordNames: [String]) async throws -> [LhUser] {
         return try await withThrowingTaskGroup(of: LhUser.self, returning: [LhUser].self) { taskGroup in
             for recordName in lhUserRecordNames {
-                taskGroup.addTask { try await getLhUserByRecordName(recordName).0 }
+                if !recordName.isEmpty {
+                    taskGroup.addTask { try await getLhUserByRecordName(recordName).0 }
+                }
             }
 
             return try await taskGroup.reduce(into: [LhUser]()) { partialResult, name in
@@ -140,6 +147,7 @@ public struct UserManager {
     public func getSelfFollowingUsers() async throws -> [LhUser] {
         let (selfLhUser, _) = try await getSelfLhUser()
         let followingLhUserRecordNames = selfLhUser.followingLhUserRecordNames
+        guard !followingLhUserRecordNames.isEmpty else { return [] }
         return try await getLhUsersByRecordNames(followingLhUserRecordNames)
     }
 
