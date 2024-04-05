@@ -23,13 +23,13 @@ public struct HeardManager {
     }
 
     public func getHeardActivityFeed(for followingRecordNames: [String]) async throws -> ([Heard], CKQueryOperation.Cursor?) {
-        let result = try await ck.records(for: .heard(.getHeardActivityFeed(followingRecordNames)), resultsLimit: 10, db: .pubDb)
+        let result = try await ck.records(for: .heard(.getHeardActivityFeed(followingRecordNames)), resultsLimit: 25, db: .pubDb)
         let feed = result.matchResults.compactMap { try? $0.1.get() }.compactMap { Heard(record: $0) }
         return (feed, result.queryCursor)
     }
 
     public func continueHeardActivityFeed(cursor: CKQueryOperation.Cursor) async throws -> ([Heard], CKQueryOperation.Cursor?) {
-        let result = try await ck.records(startingAt: cursor, resultsLimit: 10, db: .pubDb)
+        let result = try await ck.records(startingAt: cursor, resultsLimit: 25, db: .pubDb)
         let feed = result.matchResults.compactMap { try? $0.1.get() }.compactMap { Heard(record: $0) }
         return (feed, result.queryCursor)
     }
