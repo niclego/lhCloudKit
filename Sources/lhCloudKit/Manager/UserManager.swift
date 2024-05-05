@@ -144,6 +144,14 @@ public struct UserManager {
         return try await updateSelfLhUser(with: newUser)
     }
 
+    public func removeFromSelfFollowing(_ recordNames: [String]) async throws -> LhUser {
+        let (selfLhUser, _) = try await getSelfLhUser()
+        let currentFollowing = Set(selfLhUser.followingLhUserRecordNames)
+        let newFollowing = currentFollowing.subtracting(Set(recordNames))
+        let newUser = LhUser(username: selfLhUser.username, followingLhUserRecordNames: Array(newFollowing))
+        return try await updateSelfLhUser(with: newUser)
+    }
+
     public func getSelfFollowingUsers() async throws -> [LhUser] {
         let (selfLhUser, _) = try await getSelfLhUser()
         let followingLhUserRecordNames = selfLhUser.followingLhUserRecordNames
