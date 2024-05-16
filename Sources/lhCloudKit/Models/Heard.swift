@@ -15,6 +15,7 @@ public struct Heard {
     public let created: Int
     public let description: String?
     public let venueRecordName: String?
+    public let location: CLLocation?
 
     public init(
         recordId: CKRecord.ID? = nil,
@@ -23,7 +24,8 @@ public struct Heard {
         musicItemTypeId: String,
         created: Int,
         description: String?,
-        venueRecordName: String?
+        venueRecordName: String?,
+        location: CLLocation?
     ) {
         self.recordId = recordId
         self.authorRecordName = authorRecordName
@@ -32,6 +34,7 @@ public struct Heard {
         self.created = created
         self.description = description
         self.venueRecordName = venueRecordName
+        self.location = location
     }
 }
 
@@ -46,6 +49,7 @@ extension Heard: CloudKitRecordable {
 
         let description = record[HeardRecordKeys.description.rawValue] as? String
         let venueRecordName = record[HeardRecordKeys.venueRecordName.rawValue] as? String
+        let location = record[HeardRecordKeys.location.rawValue] as? CLLocation
 
         self.init(
             recordId: record.recordID,
@@ -54,7 +58,8 @@ extension Heard: CloudKitRecordable {
             musicItemTypeId: musicItemTypeId,
             created: created,
             description: description,
-            venueRecordName: venueRecordName
+            venueRecordName: venueRecordName,
+            location: location
         )
     }
 
@@ -66,6 +71,8 @@ extension Heard: CloudKitRecordable {
         record[HeardRecordKeys.created.rawValue] = created
         record[HeardRecordKeys.description.rawValue] = description
         record[HeardRecordKeys.venueRecordName.rawValue] = venueRecordName
+        record[HeardRecordKeys.location.rawValue] = location
+
         return record
     }
 
@@ -75,7 +82,8 @@ extension Heard: CloudKitRecordable {
         musicItemTypeId: "song",
         created: 1234567890,
         description: "test description",
-        venueRecordName: "testVenueRecordName"
+        venueRecordName: "testVenueRecordName",
+        location: CLLocation(latitude: 0, longitude: 0)
     )
 }
 
@@ -87,6 +95,7 @@ extension Heard {
         case created
         case description
         case venueRecordName
+        case location
         case musicItemTypeId
     }
 }

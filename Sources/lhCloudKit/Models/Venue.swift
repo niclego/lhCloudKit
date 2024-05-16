@@ -11,13 +11,13 @@ public struct Venue {
     public let recordId: CKRecord.ID?
     public let mapKitLocationId: String
     public let name: String
-    public let location: CLLocation?
+    public let location: CLLocation
 
     public init(
         recordId: CKRecord.ID? = nil,
         mapKitLocationId: String,
         name: String,
-        location: CLLocation?
+        location: CLLocation
     ) {
         self.recordId = recordId
         self.mapKitLocationId = mapKitLocationId
@@ -30,7 +30,7 @@ extension Venue: CloudKitRecordable {
     public init?(record: CKRecord) {
         guard
             let mapKitLocationId = record[VenueRecordKeys.mapKitLocationId.rawValue] as? String,
-//            let location = record[VenueRecordKeys.location.rawValue] as? CLLocation,
+            let location = record[VenueRecordKeys.location.rawValue] as? CLLocation,
             let name = record[VenueRecordKeys.name.rawValue] as? String
         else { return nil }
 
@@ -38,7 +38,7 @@ extension Venue: CloudKitRecordable {
             recordId: record.recordID,
             mapKitLocationId: mapKitLocationId,
             name: name,
-            location: record[VenueRecordKeys.location.rawValue] as? CLLocation
+            location: location
         )
     }
     

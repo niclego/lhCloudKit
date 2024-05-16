@@ -155,7 +155,8 @@ public struct UserManager {
     }
 
     public func isTaken(username: String) async throws -> Bool {
-        return false
+        let users = try await searchLhUsersByUsername(username)
+        return !users.isEmpty
     }
 
     public func removeFromSelfFollowing(_ recordNames: [String]) async throws -> LhUser {
