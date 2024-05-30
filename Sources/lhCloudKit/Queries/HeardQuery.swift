@@ -33,7 +33,7 @@ public extension Query {
         private func getNearbyActivityFeed(from location: CLLocation) -> CloudKitQuery {
             let type = Heard.HeardRecordKeys.type.rawValue
             let sortDescriptorKey = Heard.HeardRecordKeys.created.rawValue
-            let radius: CGFloat = 8000; // meters
+            let radius: CGFloat = 2000; // meters
             let predicate = NSPredicate(format: "distanceToLocation:fromLocation:(location, %@) < %f", location, radius)
             return .init(recordType: type, sortDescriptorKey: sortDescriptorKey, predicate: predicate, database: .pubDb)
         }
