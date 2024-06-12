@@ -46,3 +46,5 @@ public struct HeardManager {
         return (feed, result.queryCursor)
     }
 }
+
+extension HeardManager: Sendable {}

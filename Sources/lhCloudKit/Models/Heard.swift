@@ -38,6 +38,8 @@ public struct Heard {
     }
 }
 
+extension Heard: Sendable {}
+
 extension Heard: CloudKitRecordable {
     public init?(record: CKRecord) {
         guard 
@@ -75,8 +77,10 @@ extension Heard: CloudKitRecordable {
 
         return record
     }
+}
 
-    public static var mock: Heard = .init(
+extension Heard {
+    public static let mock: Heard = .init(
         authorRecordName: "testId",
         musicItemId: "testMusicItemId",
         musicItemTypeId: "song",

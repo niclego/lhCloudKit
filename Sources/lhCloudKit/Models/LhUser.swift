@@ -23,6 +23,8 @@ public struct LhUser {
     }
 }
 
+extension LhUser: Sendable {}
+
 extension LhUser: CloudKitRecordable {
     public init?(record: CKRecord) {
         guard let username = record[LhUserRecordKeys.username.rawValue] as? String else { return nil }

@@ -180,3 +180,5 @@ public struct UserManager {
         return try await getLhUsersByRecordNames(followingLhUserRecordNames)
     }
 }
+
+extension UserManager: Sendable {}

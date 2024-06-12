@@ -41,3 +41,5 @@ public struct VenueManager {
         return venue
     }
 }
+
+extension VenueManager: Sendable {}

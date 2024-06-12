@@ -26,6 +26,8 @@ public struct Venue {
     }
 }
 
+extension Venue: Sendable {}
+
 extension Venue: CloudKitRecordable {
     public init?(record: CKRecord) {
         guard
