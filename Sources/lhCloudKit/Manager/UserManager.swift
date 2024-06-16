@@ -30,7 +30,7 @@ public struct UserManager {
     private func createLhUser() async throws -> (LhUser, CKRecord) {
         let (systemUser, systemUserRecord) = try await getSystemUser()
         guard systemUser.lhUserRecordName == nil else { throw CloudKitError.lhUserAlreadyExistsForSystemUser }
-        let user = LhUser(username: "user-\(randomString(length: 8))", followingLhUserRecordNames: [])
+        let user = LhUser(username: "user-\(randomString(length: 32))", followingLhUserRecordNames: [], image: nil)
         let lhUserRecord = try await ck.save(record: user.record, db: .pubDb)
         systemUserRecord[User.UserRecordKeys.lhUserRecordName.rawValue] = lhUserRecord.recordID.recordName
         let _ = try await ck.save(record: systemUserRecord, db: .pubDb)
@@ -128,9 +128,9 @@ public struct UserManager {
 
     public func updateSelfLhUser(with user: LhUser) async throws -> LhUser {
         let (_, lhUserRecord) = try await getSelfLhUser()
-        // TODO: Check if name is taken
         lhUserRecord[LhUser.LhUserRecordKeys.username.rawValue] = user.username
         lhUserRecord[LhUser.LhUserRecordKeys.followingLhUserRecordNames.rawValue] = user.followingLhUserRecordNames
+        lhUserRecord[LhUser.LhUserRecordKeys.image.rawValue] = user.image
         let updatedUserRecord = try await ck.save(record: lhUserRecord, db: .pubDb)
         guard let newUser = LhUser(record: updatedUserRecord) else { throw CloudKitError.badRecordData }
         return newUser
@@ -140,7 +140,11 @@ public struct UserManager {
         let (selfLhUser, _) = try await getSelfLhUser()
         let currentFollowing = selfLhUser.followingLhUserRecordNames
         let newFollowing = currentFollowing + followingRecordNames
-        let newUser = LhUser(username: selfLhUser.username, followingLhUserRecordNames: newFollowing)
+        let newUser = LhUser(
+            username: selfLhUser.username,
+            followingLhUserRecordNames: newFollowing,
+            image: selfLhUser.image
+        )
         return try await updateSelfLhUser(with: newUser)
     }
 
@@ -148,7 +152,20 @@ public struct UserManager {
         let (selfLhUser, _) = try await getSelfLhUser()
         let newUser = LhUser(
             username: username,
-            followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames
+            followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames,
+            image: selfLhUser.image
+        )
+
+        return try await updateSelfLhUser(with: newUser)
+    }
+
+    public func changeImage(to url: URL) async throws -> LhUser {
+        let (selfLhUser, _) = try await getSelfLhUser()
+        let asset = CKAsset(fileURL: url)
+        let newUser = LhUser(
+            username: selfLhUser.username,
+            followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames,
+            image: asset
         )
 
         return try await updateSelfLhUser(with: newUser)
@@ -163,7 +180,11 @@ public struct UserManager {
         let (selfLhUser, _) = try await getSelfLhUser()
         let currentFollowing = Set(selfLhUser.followingLhUserRecordNames)
         let newFollowing = currentFollowing.subtracting(Set(recordNames))
-        let newUser = LhUser(username: selfLhUser.username, followingLhUserRecordNames: Array(newFollowing))
+        let newUser = LhUser(
+            username: selfLhUser.username,
+            followingLhUserRecordNames: Array(newFollowing),
+            image: selfLhUser.image
+        )
         return try await updateSelfLhUser(with: newUser)
     }
 
