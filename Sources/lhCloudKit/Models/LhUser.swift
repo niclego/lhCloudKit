@@ -55,3 +55,5 @@ public extension LhUser {
     }
 }
 
+extension LhUser: Hashable {}
+

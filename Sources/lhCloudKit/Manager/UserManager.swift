@@ -90,34 +90,16 @@ public struct UserManager {
         }
     }
 
-    public func getSelfFollowers() async throws -> [LhUser] {
-        let selfUser = try await getSelfLhUser().0
-        guard let selfUserRecordName = selfUser.recordId?.recordName else { throw UserManagerError.selfUserNoRecordIdFound }
-        let result = try await ck.records(for: .user(.getFollowers(selfUserRecordName)), resultsLimit: nil, db: .pubDb)
-        let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
-        return followers
-    }
-
-    public func getFollowers(for username: String) async throws -> [LhUser] {
-        let user = try await getLhUserByUsername(username)
-        guard let userRecordName = user.recordId?.recordName else { throw UserManagerError.noRecordIdFoundForUser }
-        let result = try await ck.records(for: .user(.getFollowers(userRecordName)), resultsLimit: nil, db: .pubDb)
-        let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
-        return followers
-    }
-
-    public func getLhUserByUsername(_ username: String) async throws -> LhUser {
-        let result = try await ck.records(for: .user(.getByUsername(username)), resultsLimit: nil, db: .pubDb)
-        let users = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
-        guard users.count == 1 else { throw UserManagerError.multipleUsersWithUsername }
-        guard let user = users.first else { throw UserManagerError.noUserForUsernameFound }
-        return user
-    }
-
     public func searchLhUsersByUsername(_ username: String) async throws -> [LhUser] {
         let result = try await ck.records(for: .user(.searchByUsername(username)), resultsLimit: nil, db: .pubDb)
         let users = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
         return users
+    }
+
+    public func getLhUserByUsername(_ username: String) async throws -> LhUser? {
+        let result = try await ck.records(for: .user(.getByUsername(username)), resultsLimit: nil, db: .pubDb)
+        guard let record = try? result.matchResults.first?.1.get() else { return nil }
+        return LhUser(record: record)
     }
 
     public func getAllLhUsers() async throws -> [LhUser] {
@@ -172,8 +154,8 @@ public struct UserManager {
     }
 
     public func isTaken(username: String) async throws -> Bool {
-        let users = try await searchLhUsersByUsername(username)
-        return !users.isEmpty
+        let user = try await getLhUserByUsername(username)
+        return user != nil
     }
 
     public func removeFromSelfFollowing(_ recordNames: [String]) async throws -> LhUser {
@@ -188,17 +170,17 @@ public struct UserManager {
         return try await updateSelfLhUser(with: newUser)
     }
 
-    public func getSelfFollowingUsers() async throws -> [LhUser] {
-        let (selfLhUser, _) = try await getSelfLhUser()
-        let followingLhUserRecordNames = selfLhUser.followingLhUserRecordNames
+    public func getFollowing(for recordName: String) async throws -> [LhUser] {
+        let (lhUser, _) = try await getLhUserByRecordName(recordName)
+        let followingLhUserRecordNames = lhUser.followingLhUserRecordNames
         guard !followingLhUserRecordNames.isEmpty else { return [] }
         return try await getLhUsersByRecordNames(followingLhUserRecordNames)
     }
 
-    public func getFollowingUsers(for username: String) async throws -> [LhUser] {
-        let user = try await getLhUserByUsername(username)
-        let followingLhUserRecordNames = user.followingLhUserRecordNames
-        return try await getLhUsersByRecordNames(followingLhUserRecordNames)
+    public func getFollowers(for recordName: String) async throws -> [LhUser] {
+        let result = try await ck.records(for: .user(.getFollowers(recordName)), resultsLimit: nil, db: .pubDb)
+        let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
+        return followers
     }
 }
 
