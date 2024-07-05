@@ -76,20 +76,6 @@ public struct UserManager {
         return try await getLhUserByRecordName(lhUserRecordName).0
     }
 
-    private func getLhUsersByRecordNames(_ lhUserRecordNames: [String]) async throws -> [LhUser] {
-        return try await withThrowingTaskGroup(of: LhUser.self, returning: [LhUser].self) { taskGroup in
-            for recordName in lhUserRecordNames {
-                if !recordName.isEmpty {
-                    taskGroup.addTask { try await getLhUserByRecordName(recordName).0 }
-                }
-            }
-
-            return try await taskGroup.reduce(into: [LhUser]()) { partialResult, name in
-                partialResult.append(name)
-            }
-        }
-    }
-
     public func searchLhUsersByUsername(_ username: String) async throws -> [LhUser] {
         let result = try await ck.records(for: .user(.searchByUsername(username)), resultsLimit: nil, db: .pubDb)
         let users = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
@@ -168,13 +154,6 @@ public struct UserManager {
             image: selfLhUser.image
         )
         return try await updateSelfLhUser(with: newUser)
-    }
-
-    public func getFollowing(for recordName: String) async throws -> [LhUser] {
-        let (lhUser, _) = try await getLhUserByRecordName(recordName)
-        let followingLhUserRecordNames = lhUser.followingLhUserRecordNames
-        guard !followingLhUserRecordNames.isEmpty else { return [] }
-        return try await getLhUsersByRecordNames(followingLhUserRecordNames)
     }
 
     public func getFollowers(for recordName: String) async throws -> [LhUser] {
