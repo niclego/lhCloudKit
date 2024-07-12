@@ -43,6 +43,7 @@ extension LhUser: CloudKitRecordable {
         return record
     }
 
+    @MainActor
     public static var mock: LhUser = .init(username: "testUsername", followingLhUserRecordNames: ["C701AE9D-4E83-45D5-A40C-F5B2F3DA83D3", "F443A922-3836-486B-A61A-517032996E4E"], image: nil)
 }
 

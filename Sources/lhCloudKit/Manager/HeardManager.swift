@@ -1,17 +1,17 @@
 //
-//  File.swift
-//  
+//  HeardManager.swift
+//
 //
 //  Created by Nicolas Le Gorrec on 2/10/24.
 //
 
 import CloudKit
 
-public struct HeardManager {
+public struct HeardManager: HeardManageable {
 
     private let ck: CloudKitable
 
-    public init(ck: CloudKitable = LhCloudKitMock()) {
+    public init(ck: CloudKitable) {
         self.ck = ck
     }
 

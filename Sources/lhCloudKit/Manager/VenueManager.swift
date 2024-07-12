@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  VenueManager.swift
 //  
 //
 //  Created by Nicolas Le Gorrec on 2/23/24.
@@ -7,7 +7,7 @@
 
 import CloudKit
 
-public struct VenueManager {
+public struct VenueManager: VenueManageable {
     private let ck: CloudKitable
 
     public init(ck: CloudKitable) {
@@ -41,5 +41,3 @@ public struct VenueManager {
         return venue
     }
 }
-
-extension VenueManager: Sendable {}

@@ -1,5 +1,5 @@
 //
-//  HomeViewModel.swift
+//  UserManager.swift
 //  lastheard
 //
 //  Created by Nicolas Le Gorrec on 2/4/24.
@@ -7,7 +7,7 @@
 
 import CloudKit
 
-public struct UserManager {
+public struct UserManager: UserManageable {
 
     enum UserManagerError: Error {
         case selfUserNoRecordIdFound
@@ -18,7 +18,7 @@ public struct UserManager {
 
     private let ck: CloudKitable
 
-    public init(ck: CloudKitable = LhCloudKitMock()) {
+    public init(ck: CloudKitable) {
         self.ck = ck
     }
 
@@ -162,5 +162,3 @@ public struct UserManager {
         return followers
     }
 }
-
-extension UserManager: Sendable {}
