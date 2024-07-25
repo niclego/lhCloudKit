@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CloudKit
 
 public struct UserManagerMock: UserManageable {
     private let ck: CloudKitable = LhCloudKitMock()
@@ -60,7 +61,11 @@ public struct UserManagerMock: UserManageable {
         return await .mock
     }
 
-    public func getFollowers(for recordName: String) async throws -> [LhUser] {
-        return await [.mock]
+    public func getFollowers(for recordName: String) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
+        return await ([.mock], nil)
+    }
+
+    public func continueUserFollowers(cursor: CKQueryOperation.Cursor) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
+        return await ([.mock], nil)
     }
 }

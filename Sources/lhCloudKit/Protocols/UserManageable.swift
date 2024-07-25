@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CloudKit
 
 public protocol UserManageable: Sendable {
     func createLhUser() async throws -> LhUser
@@ -20,5 +21,6 @@ public protocol UserManageable: Sendable {
     func changeImage(to url: URL) async throws -> LhUser
     func isTaken(username: String) async throws -> Bool
     func removeFromSelfFollowing(_ recordNames: [String]) async throws -> LhUser
-    func getFollowers(for recordName: String) async throws -> [LhUser]
+    func getFollowers(for recordName: String) async throws -> ([LhUser], CKQueryOperation.Cursor?)
+    func continueUserFollowers(cursor: CKQueryOperation.Cursor) async throws -> ([LhUser], CKQueryOperation.Cursor?)
 }

@@ -156,9 +156,15 @@ public struct UserManager: UserManageable {
         return try await updateSelfLhUser(with: newUser)
     }
 
-    public func getFollowers(for recordName: String) async throws -> [LhUser] {
-        let result = try await ck.records(for: .user(.getFollowers(recordName)), resultsLimit: nil, db: .pubDb)
+    public func getFollowers(for recordName: String) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
+        let result = try await ck.records(for: .user(.getFollowers(recordName)), resultsLimit: 25, db: .pubDb)
         let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
-        return followers
+        return (followers, result.queryCursor)
+    }
+
+    public func continueUserFollowers(cursor: CKQueryOperation.Cursor) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
+        let result = try await ck.records(startingAt: cursor, resultsLimit: 25, db: .pubDb)
+        let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
+        return (followers, result.queryCursor)
     }
 }
