@@ -8,8 +8,6 @@
 import CloudKit
 
 public struct HeardManagerMock: HeardManageable {
-    private let ck: CloudKitable = LhCloudKitMock()
-
     public init() {}
 
     public func createPublicHeardModel(_ heardModel: Heard) async throws -> Heard {
@@ -17,11 +15,11 @@ public struct HeardManagerMock: HeardManageable {
     }
     
     public func getHeardActivityFeed(for followingRecordNames: [String]) async throws -> ([Heard], CKQueryOperation.Cursor?) {
-        return ([.mock], nil)
+        return ([], nil)
     }
     
     public func getNearbyHeardActivityFeed(from location: CLLocation) async throws -> ([Heard], CKQueryOperation.Cursor?) {
-        return ([.mock], nil)
+        return ([], nil)
     }
     
     public func continueHeardActivityFeed(cursor: CKQueryOperation.Cursor) async throws -> ([Heard], CKQueryOperation.Cursor?) {

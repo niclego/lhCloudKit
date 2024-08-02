@@ -14,43 +14,43 @@ public struct UserManagerMock: UserManageable {
     public init() {}
 
     public func createLhUser() async throws -> LhUser {
-        return await .mock
+        return .mock
     }
     
     public func getSelfLhUser() async throws -> LhUser {
-        return await .mock
+        return .mock
     }
     
     public func getLhUserByRecordName(_ lhUserRecordName: String) async throws -> LhUser {
-        return await .mock
+        return .mock
     }
     
     public func searchLhUsersByUsername(_ username: String) async throws -> [LhUser] {
-        return await [.mock]
+        return [.mock]
     }
     
     public func getLhUserByUsername(_ username: String) async throws -> LhUser? {
-        return await .mock
+        return .mock
     }
     
     public func getAllLhUsers() async throws -> [LhUser] {
-        return await [.mock]
+        return [.mock]
     }
     
     public func updateSelfLhUser(with user: LhUser) async throws -> LhUser {
-        return await .mock
+        return .mock
     }
     
     public func addToSelfFollowing(_ followingRecordNames: [String]) async throws -> LhUser {
-        return await .mock
+        return .mock
     }
     
     public func changeUsername(to username: String) async throws -> LhUser {
-        return await .mock
+        return .mock
     }
     
     public func changeImage(to url: URL) async throws -> LhUser {
-        return await .mock
+        return .mock
     }
 
     public func isTaken(username: String) async throws -> Bool {
@@ -58,14 +58,14 @@ public struct UserManagerMock: UserManageable {
     }
     
     public func removeFromSelfFollowing(_ recordNames: [String]) async throws -> LhUser {
-        return await .mock
+        return .mock
     }
 
     public func getFollowers(for recordName: String) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
-        return await ([.mock], nil)
+        return ([], nil)
     }
 
     public func continueUserFollowers(cursor: CKQueryOperation.Cursor) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
-        return await ([.mock], nil)
+        return ([.mock], nil)
     }
 }

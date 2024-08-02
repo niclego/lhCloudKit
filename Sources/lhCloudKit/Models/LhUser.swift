@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  LhUser.swift
 //
 //
 //  Created by Nicolas Le Gorrec on 2/4/24.
@@ -42,9 +42,14 @@ extension LhUser: CloudKitRecordable {
         record[LhUserRecordKeys.followingLhUserRecordNames.rawValue] = followingLhUserRecordNames
         return record
     }
+}
 
-    @MainActor
-    public static var mock: LhUser = .init(username: "testUsername", followingLhUserRecordNames: ["F443A922-3836-486B-A61A-517032996E4E"], image: nil)
+extension LhUser {
+    public static let mock: LhUser = .init(
+        username: "testUsername",
+        followingLhUserRecordNames: [],
+        image: nil
+    )
 }
 
 public extension LhUser {
