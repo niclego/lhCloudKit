@@ -20,7 +20,6 @@ public enum CloudKitError: Error {
 }
 
 public struct LhCloudKit: CloudKitable {
-    
     public typealias RecordsAndCursorResponse = (matchResults: [(CKRecord.ID, Result<CKRecord, Error>)], queryCursor: CKQueryOperation.Cursor?)
 
     private let container: CKContainer
@@ -36,6 +35,11 @@ public struct LhCloudKit: CloudKitable {
     public func save(record: CKRecord, db: LhDatabase) async throws -> CKRecord {
         let record = try await pubDb.save(record)
         return record
+    }
+
+    public func deleteRecord(withID recordID: CKRecord.ID, db: LhDatabase) async throws -> CKRecord.ID {
+        let t = try await pubDb.deleteRecord(withID: recordID)
+        return t
     }
 
     public func record(for recordId: CKRecord.ID, db: LhDatabase) async throws -> CKRecord {

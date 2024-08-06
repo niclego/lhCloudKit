@@ -8,7 +8,9 @@
 import CloudKit
 
 public struct HeardManager: HeardManageable {
-
+    enum HeardManagerError: Error {
+        case noRecordID
+    }
     private let ck: CloudKitable
 
     public init(ck: CloudKitable) {
@@ -20,6 +22,10 @@ public struct HeardManager: HeardManageable {
         let savedHeardRecord = try await ck.save(record: record, db: .pubDb)
         guard let heardModel = Heard(record: savedHeardRecord) else { throw CloudKitError.badRecordData }
         return heardModel
+    }
+
+    public func deletePublicHeardModel(with id: CKRecord.ID) async throws {
+        let _ = try await ck.deleteRecord(withID: id, db: .pubDb)
     }
 
     public func getHeardActivityFeed(for followingRecordNames: [String]) async throws -> ([Heard], CKQueryOperation.Cursor?) {

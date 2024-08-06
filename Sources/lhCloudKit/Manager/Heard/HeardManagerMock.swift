@@ -13,7 +13,9 @@ public struct HeardManagerMock: HeardManageable {
     public func createPublicHeardModel(_ heardModel: Heard) async throws -> Heard {
         return .mock
     }
-    
+
+    public func deletePublicHeardModel(with id: CKRecord.ID) async throws { }
+
     public func getHeardActivityFeed(for followingRecordNames: [String]) async throws -> ([Heard], CKQueryOperation.Cursor?) {
         return ([], nil)
     }

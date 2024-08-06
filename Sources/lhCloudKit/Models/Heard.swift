@@ -8,7 +8,7 @@
 import CloudKit
 
 public struct Heard {
-    let recordId: CKRecord.ID?
+    public let recordId: CKRecord.ID?
     public let authorRecordName: String
     public let musicItemId: String
     public let musicItemTypeId: String
@@ -74,7 +74,6 @@ extension Heard: CloudKitRecordable {
         record[HeardRecordKeys.description.rawValue] = description
         record[HeardRecordKeys.venueRecordName.rawValue] = venueRecordName
         record[HeardRecordKeys.location.rawValue] = location
-
         return record
     }
 }
