@@ -65,3 +65,9 @@ extension Venue {
         case location
     }
 }
+
+extension Venue: Identifiable {
+    public var id: String {
+        name + mapKitLocationId + location.description
+    }
+}

@@ -102,3 +102,9 @@ extension Heard {
         case musicItemTypeId
     }
 }
+
+extension Heard: Identifiable {
+    public var id: String {
+        authorRecordName + musicItemId + String(created)
+    }
+}

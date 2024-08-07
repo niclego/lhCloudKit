@@ -27,4 +27,8 @@ public struct VenueManagerMock: VenueManageable {
     public func getVenueByMapKitLocationId(_ mapKitLocationId: String) async throws -> Venue? {
         return .mock
     }
+
+    public func getNearbyVenues(from location: CLLocation) async throws -> ([Venue], CKQueryOperation.Cursor?) {
+        return ([.mock], nil)
+    }
 }
