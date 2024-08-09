@@ -20,7 +20,7 @@ public struct HeardManagerMock: HeardManageable {
         return ([], nil)
     }
     
-    public func getNearbyHeardActivityFeed(from location: CLLocation) async throws -> ([Heard], CKQueryOperation.Cursor?) {
+    public func getNearbyHeardActivityFeed(from location: CLLocation, radius: CGFloat) async throws -> ([Heard], CKQueryOperation.Cursor?) {
         return ([], nil)
     }
     

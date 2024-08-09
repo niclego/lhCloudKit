@@ -13,6 +13,7 @@ public struct Heard {
     public let musicItemId: String
     public let musicItemTypeId: String
     public let created: Int
+    public let isLive: Bool?
     public let description: String?
     public let venueRecordName: String?
     public let location: CLLocation?
@@ -23,6 +24,7 @@ public struct Heard {
         musicItemId: String,
         musicItemTypeId: String,
         created: Int,
+        isLive: Bool,
         description: String?,
         venueRecordName: String?,
         location: CLLocation?
@@ -32,6 +34,7 @@ public struct Heard {
         self.musicItemId = musicItemId
         self.musicItemTypeId = musicItemTypeId
         self.created = created
+        self.isLive = isLive
         self.description = description
         self.venueRecordName = venueRecordName
         self.location = location
@@ -49,6 +52,7 @@ extension Heard: CloudKitRecordable {
             let created = record[HeardRecordKeys.created.rawValue] as? Int
         else { return nil }
 
+        let isLive = record[HeardRecordKeys.isLive.rawValue] as? Bool
         let description = record[HeardRecordKeys.description.rawValue] as? String
         let venueRecordName = record[HeardRecordKeys.venueRecordName.rawValue] as? String
         let location = record[HeardRecordKeys.location.rawValue] as? CLLocation
@@ -59,6 +63,7 @@ extension Heard: CloudKitRecordable {
             musicItemId: musicItemId,
             musicItemTypeId: musicItemTypeId,
             created: created,
+            isLive: isLive ?? false,
             description: description,
             venueRecordName: venueRecordName,
             location: location
@@ -71,6 +76,7 @@ extension Heard: CloudKitRecordable {
         record[HeardRecordKeys.musicItemId.rawValue] = musicItemId
         record[HeardRecordKeys.musicItemTypeId.rawValue] = musicItemTypeId
         record[HeardRecordKeys.created.rawValue] = created
+        record[HeardRecordKeys.isLive.rawValue] = isLive
         record[HeardRecordKeys.description.rawValue] = description
         record[HeardRecordKeys.venueRecordName.rawValue] = venueRecordName
         record[HeardRecordKeys.location.rawValue] = location
@@ -84,6 +90,7 @@ extension Heard {
         musicItemId: "testMusicItemId",
         musicItemTypeId: "song",
         created: 1234567890,
+        isLive: true,
         description: "test description",
         venueRecordName: "testVenueRecordName",
         location: CLLocation(latitude: 0, longitude: 0)
@@ -96,6 +103,7 @@ extension Heard {
         case authorRecordName
         case musicItemId
         case created
+        case isLive
         case description
         case venueRecordName
         case location

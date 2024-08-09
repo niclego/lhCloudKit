@@ -12,14 +12,14 @@ import CoreLocation
 public extension Query {
     enum HeardQuery {
         case getHeardActivityFeed([String])
-        case getNearbyActivityFeed(CLLocation)
+        case getNearbyActivityFeed(CLLocation, CGFloat)
 
         var query: CloudKitQuery {
             switch self {
             case .getHeardActivityFeed(let followingRecordNames):
                 return getAllHeardModels(for: followingRecordNames)
-            case .getNearbyActivityFeed(let location):
-                return getNearbyActivityFeed(from: location)
+            case .getNearbyActivityFeed(let location, let radius):
+                return getNearbyActivityFeed(from: location, radius: radius)
             }
         }
 
@@ -30,10 +30,9 @@ public extension Query {
             return .init(recordType: type, sortDescriptorKey: sortDescriptorKey, predicate: predicate, database: .pubDb)
         }
 
-        private func getNearbyActivityFeed(from location: CLLocation) -> CloudKitQuery {
+        private func getNearbyActivityFeed(from location: CLLocation, radius: CGFloat) -> CloudKitQuery {
             let type = Heard.HeardRecordKeys.type.rawValue
             let sortDescriptorKey = Heard.HeardRecordKeys.created.rawValue
-            let radius: CGFloat = 2000; // meters
             let predicate = NSPredicate(format: "distanceToLocation:fromLocation:(location, %@) < %f", location, radius)
             return .init(recordType: type, sortDescriptorKey: sortDescriptorKey, predicate: predicate, database: .pubDb)
         }

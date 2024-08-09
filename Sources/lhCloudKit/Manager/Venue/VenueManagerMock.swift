@@ -28,7 +28,7 @@ public struct VenueManagerMock: VenueManageable {
         return .mock
     }
 
-    public func getNearbyVenues(from location: CLLocation) async throws -> ([Venue], CKQueryOperation.Cursor?) {
+    public func getNearbyVenues(from location: CLLocation, radius: CGFloat) async throws -> ([Venue], CKQueryOperation.Cursor?) {
         return ([.mock], nil)
     }
 }

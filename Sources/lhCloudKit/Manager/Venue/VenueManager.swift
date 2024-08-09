@@ -41,8 +41,8 @@ public struct VenueManager: VenueManageable {
         return venue
     }
 
-    public func getNearbyVenues(from location: CLLocation) async throws -> ([Venue], CKQueryOperation.Cursor?) {
-        let result = try await ck.records(for: .venue(.getNearbyVenues(location)), resultsLimit: 25, db: .pubDb)
+    public func getNearbyVenues(from location: CLLocation, radius: CGFloat) async throws -> ([Venue], CKQueryOperation.Cursor?) {
+        let result = try await ck.records(for: .venue(.getNearbyVenues(location, radius)), resultsLimit: 25, db: .pubDb)
         let nearbyVenues = result.matchResults.compactMap { try? $0.1.get() }.compactMap { Venue(record: $0) }
         return (nearbyVenues, result.queryCursor)
     }

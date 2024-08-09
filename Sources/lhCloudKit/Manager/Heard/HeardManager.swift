@@ -34,8 +34,8 @@ public struct HeardManager: HeardManageable {
         return (feed, result.queryCursor)
     }
 
-    public func getNearbyHeardActivityFeed(from location: CLLocation) async throws -> ([Heard], CKQueryOperation.Cursor?) {
-        let result = try await ck.records(for: .heard(.getNearbyActivityFeed(location)), resultsLimit: 25, db: .pubDb)
+    public func getNearbyHeardActivityFeed(from location: CLLocation, radius: CGFloat) async throws -> ([Heard], CKQueryOperation.Cursor?) {
+        let result = try await ck.records(for: .heard(.getNearbyActivityFeed(location, radius)), resultsLimit: 25, db: .pubDb)
         let feed = result.matchResults.compactMap { try? $0.1.get() }.compactMap { Heard(record: $0) }
         return (feed, result.queryCursor)
     }
