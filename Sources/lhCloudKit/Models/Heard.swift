@@ -116,3 +116,5 @@ extension Heard: Identifiable {
         authorRecordName + musicItemId + String(created)
     }
 }
+
+extension Heard: Equatable {}
