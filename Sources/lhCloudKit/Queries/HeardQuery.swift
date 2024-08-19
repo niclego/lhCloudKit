@@ -12,6 +12,7 @@ import CoreLocation
 public extension Query {
     enum HeardQuery {
         case getHeardActivityFeed([String])
+        case getVenueHeardFeed(String)
         case getNearbyActivityFeed(CLLocation, CGFloat)
 
         var query: CloudKitQuery {
@@ -20,6 +21,8 @@ public extension Query {
                 return getAllHeardModels(for: followingRecordNames)
             case .getNearbyActivityFeed(let location, let radius):
                 return getNearbyActivityFeed(from: location, radius: radius)
+            case .getVenueHeardFeed(let venueRecordName):
+                return getVenueHeardModels(for: venueRecordName)
             }
         }
 
@@ -34,6 +37,13 @@ public extension Query {
             let type = Heard.HeardRecordKeys.type.rawValue
             let sortDescriptorKey = Heard.HeardRecordKeys.created.rawValue
             let predicate = NSPredicate(format: "distanceToLocation:fromLocation:(location, %@) < %f", location, radius)
+            return .init(recordType: type, sortDescriptorKey: sortDescriptorKey, predicate: predicate, database: .pubDb)
+        }
+
+        private func getVenueHeardModels(for recordName: String) -> CloudKitQuery {
+            let type = Heard.HeardRecordKeys.type.rawValue
+            let sortDescriptorKey = Heard.HeardRecordKeys.created.rawValue
+            let predicate = NSPredicate(format: "venueRecordName == %@", recordName)
             return .init(recordType: type, sortDescriptorKey: sortDescriptorKey, predicate: predicate, database: .pubDb)
         }
     }

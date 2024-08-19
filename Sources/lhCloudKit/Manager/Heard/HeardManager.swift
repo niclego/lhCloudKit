@@ -51,6 +51,18 @@ public struct HeardManager: HeardManageable {
         let feed = result.matchResults.compactMap { try? $0.1.get() }.compactMap { Heard(record: $0) }
         return (feed, result.queryCursor)
     }
+
+    public func getVenueActivityFeed(for venueRecordName: String) async throws -> ([Heard], CKQueryOperation.Cursor?) {
+        let result = try await ck.records(for: .heard(.getVenueHeardFeed(venueRecordName)), resultsLimit: 25, db: .pubDb)
+        let feed = result.matchResults.compactMap { try? $0.1.get() }.compactMap { Heard(record: $0) }
+        return (feed, result.queryCursor)
+    }
+
+    public func continueVenueHeardActivityFeed(cursor: CKQueryOperation.Cursor) async throws -> ([Heard], CKQueryOperation.Cursor?) {
+        let result = try await ck.records(startingAt: cursor, resultsLimit: 25, db: .pubDb)
+        let feed = result.matchResults.compactMap { try? $0.1.get() }.compactMap { Heard(record: $0) }
+        return (feed, result.queryCursor)
+    }
 }
 
 extension HeardManager: Sendable {}

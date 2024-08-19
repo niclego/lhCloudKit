@@ -14,7 +14,7 @@ public struct LhUser {
     public let image: CKAsset?
 
     public init(
-        recordId: CKRecord.ID? = .init(recordName: "test"),
+        recordId: CKRecord.ID? = nil,
         username: String,
         followingLhUserRecordNames: [String],
         image: CKAsset?
@@ -46,6 +46,7 @@ extension LhUser: CloudKitRecordable {
 
 extension LhUser {
     public static let mock: LhUser = .init(
+        recordId: .init(recordName: "test"),
         username: "testUsername",
         followingLhUserRecordNames: [],
         image: nil

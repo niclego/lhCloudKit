@@ -95,7 +95,7 @@ extension Venue: CloudKitRecordable {
     
     public static var mock: Venue {
         .init(
-            recordId: nil,
+            recordId: .init(recordName: "test"),
             mapKitLocationId: "test",
             name:  "PF Changs",
             location: .init(latitude: 10, longitude: 10),
