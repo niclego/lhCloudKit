@@ -13,42 +13,34 @@ public struct UserManagerMock: UserManageable {
 
     public init() {}
 
-    public func createLhUser() async throws -> LhUser {
-        return .mock
-    }
-    
     public func getSelfLhUser() async throws -> LhUser {
         return .mock
     }
-    
+
     public func getLhUserByRecordName(_ lhUserRecordName: String) async throws -> LhUser {
         return .mock
     }
-    
+
     public func searchLhUsersByUsername(_ username: String) async throws -> [LhUser] {
         return [.mock]
     }
-    
+
     public func getLhUserByUsername(_ username: String) async throws -> LhUser? {
         return .mock
     }
-    
-    public func getAllLhUsers() async throws -> [LhUser] {
-        return [.mock]
-    }
-    
+
     public func updateSelfLhUser(with user: LhUser) async throws -> LhUser {
         return .mock
     }
-    
+
     public func addToSelfFollowing(_ followingRecordNames: [String]) async throws -> LhUser {
         return .mock
     }
-    
+
     public func changeUsername(to username: String) async throws -> LhUser {
         return .mock
     }
-    
+
     public func changeImage(to url: URL) async throws -> LhUser {
         return .mock
     }
@@ -56,7 +48,7 @@ public struct UserManagerMock: UserManageable {
     public func isTaken(username: String) async throws -> Bool {
         return false
     }
-    
+
     public func removeFromSelfFollowing(_ recordNames: [String]) async throws -> LhUser {
         return .mock
     }

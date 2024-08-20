@@ -38,10 +38,6 @@ public struct UserManager: UserManageable {
         return (lhUser, lhUserRecord)
     }
 
-    public func createLhUser() async throws -> LhUser {
-        return try await createLhUser().0
-    }
-
     private func getSystemUser() async throws -> (User, CKRecord) {
         let recordId = try await ck.selfRecordId()
         let systemUserRecord = try await ck.record(for: recordId, db: .pubDb)
@@ -77,7 +73,7 @@ public struct UserManager: UserManageable {
     }
 
     public func searchLhUsersByUsername(_ username: String) async throws -> [LhUser] {
-        let result = try await ck.records(for: .user(.searchByUsername(username)), resultsLimit: nil, db: .pubDb)
+        let result = try await ck.records(for: .user(.searchByUsername(username)), resultsLimit: 10, db: .pubDb)
         let users = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
         return users
     }
@@ -86,12 +82,6 @@ public struct UserManager: UserManageable {
         let result = try await ck.records(for: .user(.getByUsername(username)), resultsLimit: nil, db: .pubDb)
         guard let record = try? result.matchResults.first?.1.get() else { return nil }
         return LhUser(record: record)
-    }
-
-    public func getAllLhUsers() async throws -> [LhUser] {
-        let result =  try await ck.records(for: .user(.allLhUsers), resultsLimit: nil, db: .pubDb)
-        let users = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
-        return users
     }
 
     public func updateSelfLhUser(with user: LhUser) async throws -> LhUser {
@@ -157,13 +147,13 @@ public struct UserManager: UserManageable {
     }
 
     public func getFollowers(for recordName: String) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
-        let result = try await ck.records(for: .user(.getFollowers(recordName)), resultsLimit: 25, db: .pubDb)
+        let result = try await ck.records(for: .user(.getFollowers(recordName)), resultsLimit: 10, db: .pubDb)
         let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
         return (followers, result.queryCursor)
     }
 
     public func continueUserFollowers(cursor: CKQueryOperation.Cursor) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
-        let result = try await ck.records(startingAt: cursor, resultsLimit: 25, db: .pubDb)
+        let result = try await ck.records(startingAt: cursor, resultsLimit: 10, db: .pubDb)
         let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
         return (followers, result.queryCursor)
     }
