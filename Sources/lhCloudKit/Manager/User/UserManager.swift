@@ -9,11 +9,12 @@ import CloudKit
 
 public struct UserManager: UserManageable {
 
-    enum UserManagerError: Error {
+    public enum UserManagerError: Error {
         case selfUserNoRecordIdFound
         case noUserForUsernameFound
         case noRecordIdFoundForUser
         case multipleUsersWithUsername
+        case maxUsersFollowed
     }
 
     private let ck: CloudKitable
@@ -97,10 +98,13 @@ public struct UserManager: UserManageable {
     public func addToSelfFollowing(_ followingRecordNames: [String]) async throws -> LhUser {
         let (selfLhUser, _) = try await getSelfLhUser()
         let currentFollowing = selfLhUser.followingLhUserRecordNames
-        let newFollowing = currentFollowing + followingRecordNames
+
+        guard currentFollowing.count < 200 else { throw UserManagerError.maxUsersFollowed }
+
+        let newFollowing = Set(currentFollowing + followingRecordNames)
         let newUser = LhUser(
             username: selfLhUser.username,
-            followingLhUserRecordNames: newFollowing,
+            followingLhUserRecordNames: Array(newFollowing),
             image: selfLhUser.image
         )
         return try await updateSelfLhUser(with: newUser)
