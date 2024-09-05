@@ -34,8 +34,8 @@ public struct HeardManager: HeardManageable {
         return (feed, result.queryCursor)
     }
 
-    public func getNearbyHeardActivityFeed(from location: CLLocation, radius: CGFloat) async throws -> ([Heard], CKQueryOperation.Cursor?) {
-        let result = try await ck.records(for: .heard(.getNearbyActivityFeed(location, radius)), resultsLimit: 25, db: .pubDb)
+    public func getNearbyHeardActivityFeed(from location: CLLocation, radius: CGFloat, resultsLimit: Int) async throws -> ([Heard], CKQueryOperation.Cursor?) {
+        let result = try await ck.records(for: .heard(.getNearbyActivityFeed(location, radius)), resultsLimit: resultsLimit, db: .pubDb)
         let feed = result.matchResults.compactMap { try? $0.1.get() }.compactMap { Heard(record: $0) }
         return (feed, result.queryCursor)
     }
@@ -46,8 +46,8 @@ public struct HeardManager: HeardManageable {
         return (feed, result.queryCursor)
     }
 
-    public func continueNearbyHeardActivityFeed(cursor: CKQueryOperation.Cursor) async throws -> ([Heard], CKQueryOperation.Cursor?) {
-        let result = try await ck.records(startingAt: cursor, resultsLimit: 25, db: .pubDb)
+    public func continueNearbyHeardActivityFeed(cursor: CKQueryOperation.Cursor, resultsLimit: Int) async throws -> ([Heard], CKQueryOperation.Cursor?) {
+        let result = try await ck.records(startingAt: cursor, resultsLimit: resultsLimit, db: .pubDb)
         let feed = result.matchResults.compactMap { try? $0.1.get() }.compactMap { Heard(record: $0) }
         return (feed, result.queryCursor)
     }
