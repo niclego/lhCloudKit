@@ -31,7 +31,7 @@ public struct UserManager: UserManageable {
     private func createLhUser() async throws -> (LhUser, CKRecord) {
         let (systemUser, systemUserRecord) = try await getSystemUser()
         guard systemUser.lhUserRecordName == nil else { throw CloudKitError.lhUserAlreadyExistsForSystemUser }
-        let user = LhUser(username: "user-\(Date.now.timeIntervalSince1970.description)-\(randomString(length: 8))", followingLhUserRecordNames: [], image: nil)
+        let user = LhUser(username: "user-\(Date.now.timeIntervalSince1970.description)-\(randomString(length: 8))", followingLhUserRecordNames: [], image: nil, accountType: nil)
         let lhUserRecord = try await ck.save(record: user.record, db: .pubDb)
         systemUserRecord[User.UserRecordKeys.lhUserRecordName.rawValue] = lhUserRecord.recordID.recordName
         let _ = try await ck.save(record: systemUserRecord, db: .pubDb)
@@ -90,6 +90,7 @@ public struct UserManager: UserManageable {
         lhUserRecord[LhUser.LhUserRecordKeys.username.rawValue] = user.username
         lhUserRecord[LhUser.LhUserRecordKeys.followingLhUserRecordNames.rawValue] = user.followingLhUserRecordNames
         lhUserRecord[LhUser.LhUserRecordKeys.image.rawValue] = user.image
+        lhUserRecord[LhUser.LhUserRecordKeys.accountType.rawValue] = user.accountType?.rawValue
         let updatedUserRecord = try await ck.save(record: lhUserRecord, db: .pubDb)
         guard let newUser = LhUser(record: updatedUserRecord) else { throw CloudKitError.badRecordData }
         return newUser
@@ -105,7 +106,8 @@ public struct UserManager: UserManageable {
         let newUser = LhUser(
             username: selfLhUser.username,
             followingLhUserRecordNames: Array(newFollowing),
-            image: selfLhUser.image
+            image: selfLhUser.image,
+            accountType: selfLhUser.accountType
         )
         return try await updateSelfLhUser(with: newUser)
     }
@@ -115,7 +117,8 @@ public struct UserManager: UserManageable {
         let newUser = LhUser(
             username: username,
             followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames,
-            image: selfLhUser.image
+            image: selfLhUser.image,
+            accountType: selfLhUser.accountType
         )
 
         return try await updateSelfLhUser(with: newUser)
@@ -127,7 +130,8 @@ public struct UserManager: UserManageable {
         let newUser = LhUser(
             username: selfLhUser.username,
             followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames,
-            image: asset
+            image: asset,
+            accountType: selfLhUser.accountType
         )
 
         return try await updateSelfLhUser(with: newUser)
@@ -145,7 +149,8 @@ public struct UserManager: UserManageable {
         let newUser = LhUser(
             username: selfLhUser.username,
             followingLhUserRecordNames: Array(newFollowing),
-            image: selfLhUser.image
+            image: selfLhUser.image,
+            accountType: selfLhUser.accountType
         )
         return try await updateSelfLhUser(with: newUser)
     }
