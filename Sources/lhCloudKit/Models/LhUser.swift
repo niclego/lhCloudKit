@@ -12,17 +12,20 @@ public struct LhUser {
     public let username: String
     public let followingLhUserRecordNames: [String]
     public let image: CKAsset?
+    public let isVerified: Bool
 
     public init(
         recordId: CKRecord.ID? = nil,
         username: String,
         followingLhUserRecordNames: [String],
-        image: CKAsset?
+        image: CKAsset?,
+        isVerified: Bool
     ) {
         self.recordId = recordId
         self.username = username
         self.followingLhUserRecordNames = followingLhUserRecordNames
         self.image = image
+        self.isVerified = isVerified
     }
 }
 
@@ -33,13 +36,16 @@ extension LhUser: CloudKitRecordable {
         guard let username = record[LhUserRecordKeys.username.rawValue] as? String else { return nil }
         let followingLhUserRecordNames = record[LhUserRecordKeys.followingLhUserRecordNames.rawValue] as? [String] ?? []
         let image = record[LhUserRecordKeys.image.rawValue] as? CKAsset
-        self.init(recordId: record.recordID, username: username, followingLhUserRecordNames: followingLhUserRecordNames, image: image)
+        let isVerified = record[LhUserRecordKeys.isVerified.rawValue] as? Bool ?? false
+        self.init(recordId: record.recordID, username: username, followingLhUserRecordNames: followingLhUserRecordNames, image: image, isVerified: isVerified)
     }
 
     public var record: CKRecord {
         let record = CKRecord(recordType: LhUserRecordKeys.type.rawValue)
         record[LhUserRecordKeys.username.rawValue] = username
         record[LhUserRecordKeys.followingLhUserRecordNames.rawValue] = followingLhUserRecordNames
+        record[LhUserRecordKeys.image.rawValue] = image
+        record[LhUserRecordKeys.isVerified.rawValue] = isVerified
         return record
     }
 }
@@ -49,7 +55,8 @@ extension LhUser {
         recordId: .init(recordName: "test"),
         username: "testUsername",
         followingLhUserRecordNames: [],
-        image: nil
+        image: nil,
+        isVerified: false
     )
 }
 
@@ -59,6 +66,7 @@ public extension LhUser {
         case username
         case followingLhUserRecordNames
         case image
+        case isVerified
     }
 }
 
