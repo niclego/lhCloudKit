@@ -12,20 +12,25 @@ public struct LhUser {
     public let username: String
     public let followingLhUserRecordNames: [String]
     public let image: CKAsset?
-    public let isVerified: Bool
+    public let accountType: AccountType?
+
+    public enum AccountType: String {
+        case verifiedUser
+        case verifiedArtist
+    }
 
     public init(
         recordId: CKRecord.ID? = nil,
         username: String,
         followingLhUserRecordNames: [String],
         image: CKAsset?,
-        isVerified: Bool
+        accountType: AccountType?
     ) {
         self.recordId = recordId
         self.username = username
         self.followingLhUserRecordNames = followingLhUserRecordNames
         self.image = image
-        self.isVerified = isVerified
+        self.accountType = accountType
     }
 }
 
@@ -36,8 +41,9 @@ extension LhUser: CloudKitRecordable {
         guard let username = record[LhUserRecordKeys.username.rawValue] as? String else { return nil }
         let followingLhUserRecordNames = record[LhUserRecordKeys.followingLhUserRecordNames.rawValue] as? [String] ?? []
         let image = record[LhUserRecordKeys.image.rawValue] as? CKAsset
-        let isVerified = record[LhUserRecordKeys.isVerified.rawValue] as? Bool ?? false
-        self.init(recordId: record.recordID, username: username, followingLhUserRecordNames: followingLhUserRecordNames, image: image, isVerified: isVerified)
+        let accountTypeRaw = record[LhUserRecordKeys.accountType.rawValue] as? String
+        let accountType = accountTypeRaw.flatMap { AccountType(rawValue: $0) }
+        self.init(recordId: record.recordID, username: username, followingLhUserRecordNames: followingLhUserRecordNames, image: image, accountType: accountType)
     }
 
     public var record: CKRecord {
@@ -45,7 +51,7 @@ extension LhUser: CloudKitRecordable {
         record[LhUserRecordKeys.username.rawValue] = username
         record[LhUserRecordKeys.followingLhUserRecordNames.rawValue] = followingLhUserRecordNames
         record[LhUserRecordKeys.image.rawValue] = image
-        record[LhUserRecordKeys.isVerified.rawValue] = isVerified
+        record[LhUserRecordKeys.accountType.rawValue] = accountType?.rawValue
         return record
     }
 }
@@ -56,7 +62,7 @@ extension LhUser {
         username: "testUsername",
         followingLhUserRecordNames: [],
         image: nil,
-        isVerified: false
+        accountType: nil
     )
 }
 
@@ -66,7 +72,7 @@ public extension LhUser {
         case username
         case followingLhUserRecordNames
         case image
-        case isVerified
+        case accountType
     }
 }
 
