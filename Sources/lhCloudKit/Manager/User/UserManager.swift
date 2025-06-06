@@ -94,6 +94,7 @@ public struct UserManager: UserManageable {
         lhUserRecord[LhUser.LhUserRecordKeys.username.rawValue] = user.username
         lhUserRecord[LhUser.LhUserRecordKeys.followingLhUserRecordNames.rawValue] = user.followingLhUserRecordNames
         lhUserRecord[LhUser.LhUserRecordKeys.image.rawValue] = user.image
+        lhUserRecord[LhUser.LhUserRecordKeys.accountType.rawValue] = user.accountType?.rawValue
         let updatedUserRecord = try await ck.save(record: lhUserRecord, db: .pubDb)
         guard let newUser = LhUser(record: updatedUserRecord) else { throw CloudKitError.badRecordData }
         return newUser
