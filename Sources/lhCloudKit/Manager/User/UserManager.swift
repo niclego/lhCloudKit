@@ -23,6 +23,8 @@ public struct UserManager: UserManageable {
         self.ck = ck
     }
 
+    // MARK: - Private
+
     private func randomString(length: Int) -> String {
       let letters = "0123456789abcdefgABCDEFG"
       return String((0..<length).map{ _ in letters.randomElement()! })
@@ -58,15 +60,17 @@ public struct UserManager: UserManageable {
         return (lHUser, lhUserRecord)
     }
 
-    public func getSelfLhUser() async throws -> LhUser {
-        return try await getSelfLhUser().0
-    }
-
     private func getLhUserByRecordName(_ lhUserRecordName: String) async throws -> (LhUser, CKRecord) {
         let lhUserRecordId = CKRecord.ID(recordName: lhUserRecordName)
         let lhUserRecord = try await ck.record(for: lhUserRecordId, db: .pubDb)
         guard let lhUser = LhUser(record: lhUserRecord) else { throw CloudKitError.badRecordData }
         return (lhUser, lhUserRecord)
+    }
+
+    // MARK: - Public
+
+    public func getSelfLhUser() async throws -> LhUser {
+        return try await getSelfLhUser().0
     }
 
     public func getLhUserByRecordName(_ lhUserRecordName: String) async throws -> LhUser {
