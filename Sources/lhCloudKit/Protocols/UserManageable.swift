@@ -17,6 +17,7 @@ public protocol UserManageable: Sendable {
     func addToSelfFollowing(_ followingRecordNames: [String]) async throws -> LhUser
     func changeUsername(to username: String) async throws -> LhUser
     func changeImage(to url: URL) async throws -> LhUser
+    func changeAccountType(to accountType: LhUser.AccountType) async throws -> LhUser
     func isTaken(username: String) async throws -> Bool
     func removeFromSelfFollowing(_ recordNames: [String]) async throws -> LhUser
     func getFollowers(for recordName: String) async throws -> ([LhUser], CKQueryOperation.Cursor?)
