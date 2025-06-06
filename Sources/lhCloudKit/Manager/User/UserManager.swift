@@ -140,6 +140,18 @@ public struct UserManager: UserManageable {
         return try await updateSelfLhUser(with: newUser)
     }
 
+    public func changeAccountType(to accountType: LhUser.AccountType) async throws -> LhUser {
+        let (selfLhUser, _) = try await getSelfLhUser()
+        let newUser = LhUser(
+            username: selfLhUser.username,
+            followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames,
+            image: selfLhUser.image,
+            accountType: accountType
+        )
+
+        return try await updateSelfLhUser(with: newUser)
+    }
+
     public func isTaken(username: String) async throws -> Bool {
         let user = try await getLhUserByUsername(username)
         return user != nil

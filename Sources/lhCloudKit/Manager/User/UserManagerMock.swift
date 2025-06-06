@@ -45,6 +45,10 @@ public struct UserManagerMock: UserManageable {
         return .mock
     }
 
+    public func changeAccountType(to accountType: LhUser.AccountType) async throws -> LhUser {
+        return .mock
+    }
+
     public func isTaken(username: String) async throws -> Bool {
         return false
     }
