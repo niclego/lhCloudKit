@@ -76,5 +76,9 @@ public extension LhUser {
     }
 }
 
+extension LhUser: Identifiable {
+    public var id: String { username }
+}
+
 extension LhUser: Hashable {}
 
