@@ -13,6 +13,7 @@ public struct LhUser {
     public let followingLhUserRecordNames: [String]
     public let image: CKAsset?
     public let accountType: AccountType?
+    public let isPublicAccount: Bool?
 
     public enum AccountType: String {
         case verifiedUser
@@ -24,13 +25,15 @@ public struct LhUser {
         username: String,
         followingLhUserRecordNames: [String],
         image: CKAsset?,
-        accountType: AccountType?
+        accountType: AccountType?,
+        isPublicAccount: Bool?
     ) {
         self.recordId = recordId
         self.username = username
         self.followingLhUserRecordNames = followingLhUserRecordNames
         self.image = image
         self.accountType = accountType
+        self.isPublicAccount = isPublicAccount
     }
 }
 
@@ -43,7 +46,15 @@ extension LhUser: CloudKitRecordable {
         let image = record[LhUserRecordKeys.image.rawValue] as? CKAsset
         let accountTypeRaw = record[LhUserRecordKeys.accountType.rawValue] as? String
         let accountType = accountTypeRaw.flatMap { AccountType(rawValue: $0) }
-        self.init(recordId: record.recordID, username: username, followingLhUserRecordNames: followingLhUserRecordNames, image: image, accountType: accountType)
+        let isPublicAccount = record[LhUserRecordKeys.isPublicAccount.rawValue] as? Bool
+        self.init(
+            recordId: record.recordID,
+            username: username,
+            followingLhUserRecordNames: followingLhUserRecordNames,
+            image: image,
+            accountType: accountType,
+            isPublicAccount: isPublicAccount
+        )
     }
 
     public var record: CKRecord {
@@ -52,6 +63,7 @@ extension LhUser: CloudKitRecordable {
         record[LhUserRecordKeys.followingLhUserRecordNames.rawValue] = followingLhUserRecordNames
         record[LhUserRecordKeys.image.rawValue] = image
         record[LhUserRecordKeys.accountType.rawValue] = accountType?.rawValue
+        record[LhUserRecordKeys.isPublicAccount.rawValue] = isPublicAccount
         return record
     }
 }
@@ -62,7 +74,8 @@ extension LhUser {
         username: "testUsername",
         followingLhUserRecordNames: [],
         image: nil,
-        accountType: nil
+        accountType: nil,
+        isPublicAccount: nil
     )
 }
 
@@ -73,6 +86,7 @@ public extension LhUser {
         case followingLhUserRecordNames
         case image
         case accountType
+        case isPublicAccount
     }
 }
 
