@@ -49,6 +49,10 @@ public struct UserManagerMock: UserManageable {
         return .mock
     }
 
+    public func changeAccountVisibility(to isPublicAccount: Bool) async throws -> LhUser {
+        return .mock
+    }
+
     public func isTaken(username: String) async throws -> Bool {
         return false
     }

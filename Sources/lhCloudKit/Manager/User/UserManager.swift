@@ -33,7 +33,13 @@ public struct UserManager: UserManageable {
     private func createLhUser() async throws -> (LhUser, CKRecord) {
         let (systemUser, systemUserRecord) = try await getSystemUser()
         guard systemUser.lhUserRecordName == nil else { throw CloudKitError.lhUserAlreadyExistsForSystemUser }
-        let user = LhUser(username: "user-\(Date.now.timeIntervalSince1970.description)-\(randomString(length: 8))", followingLhUserRecordNames: [], image: nil, accountType: nil)
+        let user = LhUser(
+            username: "user-\(Date.now.timeIntervalSince1970.description)-\(randomString(length: 8))",
+            followingLhUserRecordNames: [],
+            image: nil,
+            accountType: nil,
+            isPublicAccount: false
+        )
         let lhUserRecord = try await ck.save(record: user.record, db: .pubDb)
         systemUserRecord[User.UserRecordKeys.lhUserRecordName.rawValue] = lhUserRecord.recordID.recordName
         let _ = try await ck.save(record: systemUserRecord, db: .pubDb)
@@ -95,6 +101,7 @@ public struct UserManager: UserManageable {
         lhUserRecord[LhUser.LhUserRecordKeys.followingLhUserRecordNames.rawValue] = user.followingLhUserRecordNames
         lhUserRecord[LhUser.LhUserRecordKeys.image.rawValue] = user.image
         lhUserRecord[LhUser.LhUserRecordKeys.accountType.rawValue] = user.accountType?.rawValue
+        lhUserRecord[LhUser.LhUserRecordKeys.isPublicAccount.rawValue] = user.isPublicAccount
         let updatedUserRecord = try await ck.save(record: lhUserRecord, db: .pubDb)
         guard let newUser = LhUser(record: updatedUserRecord) else { throw CloudKitError.badRecordData }
         return newUser
@@ -111,7 +118,8 @@ public struct UserManager: UserManageable {
             username: selfLhUser.username,
             followingLhUserRecordNames: Array(newFollowing),
             image: selfLhUser.image,
-            accountType: selfLhUser.accountType
+            accountType: selfLhUser.accountType,
+            isPublicAccount: selfLhUser.isPublicAccount
         )
         return try await updateSelfLhUser(with: newUser)
     }
@@ -122,7 +130,8 @@ public struct UserManager: UserManageable {
             username: username,
             followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames,
             image: selfLhUser.image,
-            accountType: selfLhUser.accountType
+            accountType: selfLhUser.accountType,
+            isPublicAccount: selfLhUser.isPublicAccount
         )
 
         return try await updateSelfLhUser(with: newUser)
@@ -135,7 +144,8 @@ public struct UserManager: UserManageable {
             username: selfLhUser.username,
             followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames,
             image: asset,
-            accountType: selfLhUser.accountType
+            accountType: selfLhUser.accountType,
+            isPublicAccount: selfLhUser.isPublicAccount
         )
 
         return try await updateSelfLhUser(with: newUser)
@@ -147,7 +157,21 @@ public struct UserManager: UserManageable {
             username: selfLhUser.username,
             followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames,
             image: selfLhUser.image,
-            accountType: accountType
+            accountType: accountType,
+            isPublicAccount: selfLhUser.isPublicAccount
+        )
+
+        return try await updateSelfLhUser(with: newUser)
+    }
+
+    public func changeAccountVisibility(to isPublicAccount: Bool) async throws -> LhUser {
+        let (selfLhUser, _) = try await getSelfLhUser()
+        let newUser = LhUser(
+            username: selfLhUser.username,
+            followingLhUserRecordNames: selfLhUser.followingLhUserRecordNames,
+            image: selfLhUser.image,
+            accountType: selfLhUser.accountType,
+            isPublicAccount: isPublicAccount
         )
 
         return try await updateSelfLhUser(with: newUser)
@@ -166,7 +190,8 @@ public struct UserManager: UserManageable {
             username: selfLhUser.username,
             followingLhUserRecordNames: Array(newFollowing),
             image: selfLhUser.image,
-            accountType: selfLhUser.accountType
+            accountType: selfLhUser.accountType,
+            isPublicAccount: selfLhUser.isPublicAccount
         )
         return try await updateSelfLhUser(with: newUser)
     }
