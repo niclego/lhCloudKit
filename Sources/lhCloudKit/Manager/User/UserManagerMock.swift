@@ -79,6 +79,10 @@ public struct UserManagerMock: UserManageable {
         return nil
     }
 
+    public func isFollowRequestPending(for followeeRecordName: String) async throws -> LhUserFollowerRequest? {
+        return nil
+    }
+
     public func createUserFollowerRequest(_ request: LhUserFollowerRequest) async throws -> LhUserFollowerRequest {
         return .mock
     }

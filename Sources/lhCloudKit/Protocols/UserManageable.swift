@@ -26,6 +26,7 @@ public protocol UserManageable: Sendable {
     func createUserFollower(_ userFollower: LhUserFollower) async throws -> LhUserFollower
     func deleteUserFollower(with id: CKRecord.ID) async throws
     func getFollowerLink(for followerRecordName: String, followeeRecordName: String) async throws -> LhUserFollower?
+    func isFollowRequestPending(for followeeRecordName: String) async throws -> LhUserFollowerRequest?
     func createUserFollowerRequest(_ request: LhUserFollowerRequest) async throws -> LhUserFollowerRequest
     func deleteUserFollowerRequest(with id: CKRecord.ID) async throws
     func acceptUserFollowerRequest(_ request: LhUserFollowerRequest) async throws -> LhUserFollower
