@@ -68,4 +68,14 @@ public struct UserManagerMock: UserManageable {
     public func continueUserFollowers(cursor: CKQueryOperation.Cursor) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
         return ([.mock], nil)
     }
+
+    public func createUserFollower(_ userFollower: LhUserFollower) async throws -> LhUserFollower {
+        return .mock
+    }
+
+    public func deleteUserFollower(with id: CKRecord.ID) async throws { }
+
+    public func isFollowing(followerRecordName: String, followeeRecordName: String) async throws -> Bool {
+        return false
+    }
 }
