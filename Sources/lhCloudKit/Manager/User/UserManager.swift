@@ -225,6 +225,14 @@ public struct UserManager: UserManageable {
         return LhUserFollower(record: record)
     }
 
+    public func isFollowRequestPending(for followeeRecordName: String) async throws -> LhUserFollowerRequest? {
+        let (selfUser, _) = try await getSelfLhUser()
+        guard let followerRecordName = selfUser.recordId?.recordName else { throw UserManagerError.selfUserNoRecordIdFound }
+        let result = try await ck.records(for: .userFollowerRequest(.isPending(followerRecordName, followeeRecordName)), resultsLimit: 1, db: .pubDb)
+        guard let record = try? result.matchResults.first?.1.get() else { return nil }
+        return LhUserFollowerRequest(record: record)
+    }
+
     public func createUserFollowerRequest(_ request: LhUserFollowerRequest) async throws -> LhUserFollowerRequest {
         let record = request.record
         let savedRecord = try await ck.save(record: record, db: .pubDb)
