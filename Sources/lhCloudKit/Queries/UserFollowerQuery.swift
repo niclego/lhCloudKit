@@ -10,6 +10,7 @@ public extension Query {
     enum UserFollowerQuery {
         case isFollowing(String, String)
         case getFollowersForFollowee(String)
+        case getFollowingForFollower(String)
 
         var query: CloudKitQuery {
             switch self {
@@ -17,6 +18,8 @@ public extension Query {
                 return isFollowing(follower: follower, followee: followee)
             case .getFollowersForFollowee(let followee):
                 return getFollowers(for: followee)
+            case .getFollowingForFollower(let follower):
+                return getFollowing(for: follower)
             }
         }
 
@@ -34,6 +37,15 @@ public extension Query {
                 recordType: LhUserFollower.LhUserFollowerRecordKeys.type.rawValue,
                 sortDescriptorKey: LhUserFollower.LhUserFollowerRecordKeys.created.rawValue,
                 predicate: NSPredicate(format: "followee == %@", followee),
+                database: .pubDb
+            )
+        }
+
+        private func getFollowing(for follower: String) -> CloudKitQuery {
+            return .init(
+                recordType: LhUserFollower.LhUserFollowerRecordKeys.type.rawValue,
+                sortDescriptorKey: LhUserFollower.LhUserFollowerRecordKeys.created.rawValue,
+                predicate: NSPredicate(format: "follower == %@", follower),
                 database: .pubDb
             )
         }
