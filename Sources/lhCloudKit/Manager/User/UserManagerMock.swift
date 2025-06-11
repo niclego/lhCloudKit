@@ -69,6 +69,14 @@ public struct UserManagerMock: UserManageable {
         return ([.mock], nil)
     }
 
+    public func getFollowees(for recordName: String) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
+        return ([.mock], nil)
+    }
+
+    public func continueUserFollowees(cursor: CKQueryOperation.Cursor) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
+        return ([.mock], nil)
+    }
+
     public func createUserFollower(_ userFollower: LhUserFollower) async throws -> LhUserFollower {
         return .mock
     }
