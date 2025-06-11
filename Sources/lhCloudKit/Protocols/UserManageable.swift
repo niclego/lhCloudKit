@@ -23,4 +23,7 @@ public protocol UserManageable: Sendable {
     func removeFromSelfFollowing(_ recordNames: [String]) async throws -> LhUser
     func getFollowers(for recordName: String) async throws -> ([LhUser], CKQueryOperation.Cursor?)
     func continueUserFollowers(cursor: CKQueryOperation.Cursor) async throws -> ([LhUser], CKQueryOperation.Cursor?)
+    func createUserFollower(_ userFollower: LhUserFollower) async throws -> LhUserFollower
+    func deleteUserFollower(with id: CKRecord.ID) async throws
+    func isFollowing(followerRecordName: String, followeeRecordName: String) async throws -> Bool
 }

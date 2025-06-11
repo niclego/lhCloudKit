@@ -207,4 +207,21 @@ public struct UserManager: UserManageable {
         let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
         return (followers, result.queryCursor)
     }
+
+    public func createUserFollower(_ userFollower: LhUserFollower) async throws -> LhUserFollower {
+        let record = userFollower.record
+        let savedRecord = try await ck.save(record: record, db: .pubDb)
+        guard let model = LhUserFollower(record: savedRecord) else { throw CloudKitError.badRecordData }
+        return model
+    }
+
+    public func deleteUserFollower(with id: CKRecord.ID) async throws {
+        let _ = try await ck.deleteRecord(withID: id, db: .pubDb)
+    }
+
+    public func isFollowing(followerRecordName: String, followeeRecordName: String) async throws -> Bool {
+        let result = try await ck.records(for: .userFollower(.isFollowing(followerRecordName, followeeRecordName)), resultsLimit: 1, db: .pubDb)
+        let record = try? result.matchResults.first?.1.get()
+        return record != nil
+    }
 }
