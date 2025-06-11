@@ -63,3 +63,12 @@ public extension LhUserFollowerRequest {
 extension LhUserFollowerRequest: Identifiable {
     public var id: String { follower + followee + String(created) }
 }
+
+extension LhUserFollowerRequest: Equatable {
+    public static func == (
+        lhs: LhUserFollowerRequest,
+        rhs: LhUserFollowerRequest
+    ) -> Bool {
+        lhs.id == rhs.id
+    }
+}
