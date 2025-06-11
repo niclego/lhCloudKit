@@ -233,6 +233,20 @@ public struct UserManager: UserManageable {
         return LhUserFollowerRequest(record: record)
     }
 
+    public func getAllFollowerRequests() async throws -> ([LhUserFollowerRequest], CKQueryOperation.Cursor?) {
+        let (selfUser, _) = try await getSelfLhUser()
+        guard let followeeRecordName = selfUser.recordId?.recordName else { throw UserManagerError.selfUserNoRecordIdFound }
+        let result = try await ck.records(for: .userFollowerRequest(.getRequestsForFollowee(followeeRecordName)), resultsLimit: 20, db: .pubDb)
+        let requests = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUserFollowerRequest(record: $0) }
+        return (requests, result.queryCursor)
+    }
+
+    public func continueUserFollowerRequests(cursor: CKQueryOperation.Cursor) async throws -> ([LhUserFollowerRequest], CKQueryOperation.Cursor?) {
+        let result = try await ck.records(startingAt: cursor, resultsLimit: 20, db: .pubDb)
+        let requests = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUserFollowerRequest(record: $0) }
+        return (requests, result.queryCursor)
+    }
+
     public func createUserFollowerRequest(_ request: LhUserFollowerRequest) async throws -> LhUserFollowerRequest {
         let record = request.record
         let savedRecord = try await ck.save(record: record, db: .pubDb)
