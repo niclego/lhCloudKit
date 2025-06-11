@@ -78,4 +78,14 @@ public struct UserManagerMock: UserManageable {
     public func getFollowerLink(for followerRecordName: String, followeeRecordName: String) async throws -> LhUserFollower? {
         return nil
     }
+
+    public func createUserFollowerRequest(_ request: LhUserFollowerRequest) async throws -> LhUserFollowerRequest {
+        return .mock
+    }
+
+    public func deleteUserFollowerRequest(with id: CKRecord.ID) async throws { }
+
+    public func acceptUserFollowerRequest(_ request: LhUserFollowerRequest) async throws -> LhUserFollower {
+        return .mock
+    }
 }
