@@ -224,4 +224,22 @@ public struct UserManager: UserManageable {
         guard let record = try? result.matchResults.first?.1.get() else { return nil }
         return LhUserFollower(record: record)
     }
+
+    public func createUserFollowerRequest(_ request: LhUserFollowerRequest) async throws -> LhUserFollowerRequest {
+        let record = request.record
+        let savedRecord = try await ck.save(record: record, db: .pubDb)
+        guard let model = LhUserFollowerRequest(record: savedRecord) else { throw CloudKitError.badRecordData }
+        return model
+    }
+
+    public func deleteUserFollowerRequest(with id: CKRecord.ID) async throws {
+        let _ = try await ck.deleteRecord(withID: id, db: .pubDb)
+    }
+
+    public func acceptUserFollowerRequest(_ request: LhUserFollowerRequest) async throws -> LhUserFollower {
+        guard let requestId = request.recordId else { throw UserManagerError.noRecordIdFoundForUser }
+        try await deleteUserFollowerRequest(with: requestId)
+        let follower = LhUserFollower(follower: request.follower, followee: request.followee, created: request.created)
+        return try await createUserFollower(follower)
+    }
 }
