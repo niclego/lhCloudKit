@@ -219,9 +219,9 @@ public struct UserManager: UserManageable {
         let _ = try await ck.deleteRecord(withID: id, db: .pubDb)
     }
 
-    public func isFollowing(followerRecordName: String, followeeRecordName: String) async throws -> Bool {
+    public func getFollowerLink(for followerRecordName: String, followeeRecordName: String) async throws -> LhUserFollower? {
         let result = try await ck.records(for: .userFollower(.isFollowing(followerRecordName, followeeRecordName)), resultsLimit: 1, db: .pubDb)
-        let record = try? result.matchResults.first?.1.get()
-        return record != nil
+        guard let record = try? result.matchResults.first?.1.get() else { return nil }
+        return LhUserFollower(record: record)
     }
 }
