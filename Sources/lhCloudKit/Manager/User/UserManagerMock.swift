@@ -75,7 +75,7 @@ public struct UserManagerMock: UserManageable {
 
     public func deleteUserFollower(with id: CKRecord.ID) async throws { }
 
-    public func isFollowing(followerRecordName: String, followeeRecordName: String) async throws -> Bool {
-        return false
+    public func getFollowerLink(for followerRecordName: String, followeeRecordName: String) async throws -> LhUserFollower? {
+        return nil
     }
 }
