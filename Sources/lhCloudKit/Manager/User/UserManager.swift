@@ -197,15 +197,45 @@ public struct UserManager: UserManageable {
     }
 
     public func getFollowers(for recordName: String) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
-        let result = try await ck.records(for: .user(.getFollowers(recordName)), resultsLimit: 10, db: .pubDb)
-        let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
-        return (followers, result.queryCursor)
+        let result = try await ck.records(for: .userFollower(.getFollowersForFollowee(recordName)), resultsLimit: 10, db: .pubDb)
+        let followerLinks = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUserFollower(record: $0) }
+
+        let users = try await withThrowingTaskGroup(of: LhUser.self) { group -> [LhUser] in
+            for link in followerLinks {
+                group.addTask {
+                    try await getLhUserByRecordName(link.follower)
+                }
+            }
+
+            var collected: [LhUser] = []
+            for try await user in group {
+                collected.append(user)
+            }
+            return collected
+        }
+
+        return (users, result.queryCursor)
     }
 
     public func continueUserFollowers(cursor: CKQueryOperation.Cursor) async throws -> ([LhUser], CKQueryOperation.Cursor?) {
         let result = try await ck.records(startingAt: cursor, resultsLimit: 10, db: .pubDb)
-        let followers = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUser(record: $0) }
-        return (followers, result.queryCursor)
+        let followerLinks = result.matchResults.compactMap { try? $0.1.get() }.compactMap { LhUserFollower(record: $0) }
+
+        let users = try await withThrowingTaskGroup(of: LhUser.self) { group -> [LhUser] in
+            for link in followerLinks {
+                group.addTask {
+                    try await getLhUserByRecordName(link.follower)
+                }
+            }
+
+            var collected: [LhUser] = []
+            for try await user in group {
+                collected.append(user)
+            }
+            return collected
+        }
+
+        return (users, result.queryCursor)
     }
 
     public func createUserFollower(_ userFollower: LhUserFollower) async throws -> LhUserFollower {
