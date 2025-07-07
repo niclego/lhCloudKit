@@ -16,14 +16,14 @@ public struct AuthManager: AuthManageable {
 
     public init() { }
 
-    public var authStateChanges: AsyncStream<(LhAuthChangeEvent, Bool)> {
+    public var authStateChanges: AsyncStream<(event: LhAuthChangeEvent, isSignedIn: Bool)> {
         AsyncStream { continuation in
             Task {
                 for await change in supabase.auth.authStateChanges {
                     let event = LhAuthChangeEvent(rawValue: change.event.rawValue)
                         ?? .signedOut
-                    let isSignedOut = change.session == nil
-                    continuation.yield((event, isSignedOut))
+                    let isSignedIn = change.session != nil
+                    continuation.yield((event, isSignedIn))
                 }
             }
         }

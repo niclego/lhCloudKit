@@ -15,7 +15,7 @@ public struct LhUser {
     public let accountType: AccountType?
     public let isPublicAccount: Bool?
 
-    public enum AccountType: String {
+    public enum AccountType: String, Sendable {
         case verifiedUser
         case verifiedArtist
     }

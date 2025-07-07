@@ -10,5 +10,5 @@ import Foundation
 public protocol AuthManageable: Sendable {
     func signInWithAppleIdToken(_ token: String) async throws
     func signOut() async throws
-    var authStateChanges: AsyncStream<(LhAuthChangeEvent, Bool)> { get }
+    var authStateChanges: AsyncStream<(event: LhAuthChangeEvent, isSignedIn: Bool)> { get }
 }

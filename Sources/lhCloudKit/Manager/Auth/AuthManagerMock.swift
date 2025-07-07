@@ -10,7 +10,7 @@ import Foundation
 public struct AuthManagerMock: AuthManageable {
     public init() {}
 
-    public var authStateChanges: AsyncStream<(LhAuthChangeEvent, Bool)> {
+    public var authStateChanges: AsyncStream<(event: LhAuthChangeEvent, isSignedIn: Bool)> {
         AsyncStream { continuation in
             continuation.finish()
         }
