@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Supabase
 
 public struct AuthManager: AuthManageable {
     public init() { }
