@@ -18,8 +18,14 @@ public struct AuthManager: AuthManageable {
 
     public var authStateChanges: AsyncStream<(LhAuthChangeEvent, Bool)> {
         AsyncStream { continuation in
-            // TODO: implement auth state change events
-            continuation.finish()
+            Task {
+                for await change in supabase.auth.authStateChanges {
+                    let event = LhAuthChangeEvent(rawValue: change.event.rawValue)
+                        ?? .signedOut
+                    let isSignedOut = change.session == nil
+                    continuation.yield((event, isSignedOut))
+                }
+            }
         }
     }
 
