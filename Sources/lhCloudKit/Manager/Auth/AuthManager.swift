@@ -9,12 +9,11 @@ import Foundation
 import Supabase
 
 public struct AuthManager: AuthManageable {
-    private let supabase = SupabaseClient(
-      supabaseURL: URL(string: "https://avsqkaapqsvhwcbmqnum.supabase.co")!,
-      supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2c3FrYWFwcXN2aHdjYm1xbnVtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzOTIyMzMsImV4cCI6MjA2Njk2ODIzM30.9yh_jmoLKaOweHCqlKfE0NhDZtRKDOKdacm3r3LHFdI"
-    )
+    private let supabase: SupabaseClient
 
-    public init() { }
+    public init(supabase: SupabaseClient) {
+        self.supabase = supabase
+    }
 
     public var authStateChanges: AsyncStream<(event: LhAuthChangeEvent, isSignedIn: Bool)> {
         AsyncStream { continuation in

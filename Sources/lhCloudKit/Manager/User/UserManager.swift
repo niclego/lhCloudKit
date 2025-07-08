@@ -6,6 +6,7 @@
 //
 
 import CloudKit
+import Supabase
 
 public struct UserManager: UserManageable {
 
@@ -18,9 +19,11 @@ public struct UserManager: UserManageable {
     }
 
     private let ck: CloudKitable
+    private let supabase: SupabaseClient
 
-    public init(ck: CloudKitable) {
+    public init(ck: CloudKitable, supabase: SupabaseClient) {
         self.ck = ck
+        self.supabase = supabase
     }
 
     // MARK: - Private
@@ -61,6 +64,9 @@ public struct UserManager: UserManageable {
         guard let recordName = sysUser.lhUserRecordName else {
             return try await createLhUser()
         }
+
+        let supabaseUser = try await getSupabaseUser(supabase: supabase)
+        print(supabaseUser.username)
 
         let (lHUser, lhUserRecord) = try await getLhUserByRecordName(recordName)
         return (lHUser, lhUserRecord)
