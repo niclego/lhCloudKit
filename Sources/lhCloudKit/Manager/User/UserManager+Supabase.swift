@@ -65,9 +65,9 @@ extension UserManager {
     ) async throws -> LhUserFollowerRequest {
         let user = try await supabase.auth.session.user
         let followerId = user.id.uuidString
-        let values: [String: Any] = [
+        let values = [
             "follower": followerId,
-            "followee": followeeId
+            "followee": followeeId,
         ]
         let request: SupabaseLhUserFollowerRequest = try await supabase
             .from("lh_user_follower_requests")
@@ -97,9 +97,9 @@ extension UserManager {
             throw UserManagerError.noRecordIdFoundForUser
         }
         try await deleteUserFollowerRequest(supabase: supabase, requestId: requestId)
-        let values: [String: Any] = [
+        let values = [
             "follower": request.follower,
-            "followee": request.followee
+            "followee": request.followee,
         ]
         let follower: SupabaseLhUserFollower = try await supabase
             .from("lh_user_followers")
