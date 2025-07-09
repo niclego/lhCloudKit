@@ -65,9 +65,6 @@ public struct UserManager: UserManageable {
             return try await createLhUser()
         }
 
-        let supabaseUser = try await getSupabaseUser(supabase: supabase)
-        print(supabaseUser.username)
-
         let (lHUser, lhUserRecord) = try await getLhUserByRecordName(recordName)
         return (lHUser, lhUserRecord)
     }

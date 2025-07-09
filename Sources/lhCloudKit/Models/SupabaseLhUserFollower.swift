@@ -8,9 +8,9 @@
 import CloudKit
 
 struct SupabaseLhUserFollower: Decodable {
-    let id: String
-    let follower: String
-    let followee: String
+    let id: UUID
+    let follower: UUID
+    let followee: UUID
     let createdAt: String
 
     enum CodingKeys: String, CodingKey {
@@ -18,17 +18,5 @@ struct SupabaseLhUserFollower: Decodable {
         case follower
         case followee
         case createdAt = "created_at"
-    }
-}
-
-extension SupabaseLhUserFollower {
-    var model: LhUserFollower {
-        let formatter = ISO8601DateFormatter()
-        let date = formatter.date(from: createdAt) ?? .now
-        return LhUserFollower(
-            follower: follower,
-            followee: followee,
-            created: Int(date.timeIntervalSince1970)
-        )
     }
 }

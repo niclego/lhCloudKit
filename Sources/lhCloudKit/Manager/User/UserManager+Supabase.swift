@@ -6,6 +6,7 @@
 //
 
 import Supabase
+import Foundation
 
 extension UserManager {
     internal func getSupabaseUser(supabase: SupabaseClient) async throws -> SupabaseLhUser {
@@ -26,28 +27,28 @@ extension UserManager {
 extension UserManager {
     internal func isFollowRequestPending(
         supabase: SupabaseClient,
-        followeeId: String
-    ) async throws -> LhUserFollowerRequest? {
+        followeeId: UUID
+    ) async throws -> SupabaseLhUserFollowerRequest? {
         let user = try await supabase.auth.session.user
-        let followerId = user.id.uuidString
-        let request: SupabaseLhUserFollowerRequest? = try await supabase
+        let followerId = user.id
+        let requests: [SupabaseLhUserFollowerRequest] = try await supabase
             .from("lh_user_follower_requests")
             .select()
             .eq("follower", value: followerId)
             .eq("followee", value: followeeId)
-            .maybeSingle()
+            .range(from: 0, to: 0)
             .execute()
             .value
-        return request?.model
+        return requests.first
     }
 
     internal func getAllFollowerRequests(
         supabase: SupabaseClient,
         limit: Int = 20,
         offset: Int = 0
-    ) async throws -> [LhUserFollowerRequest] {
+    ) async throws -> [SupabaseLhUserFollowerRequest] {
         let user = try await supabase.auth.session.user
-        let followeeId = user.id.uuidString
+        let followeeId = user.id
         let requests: [SupabaseLhUserFollowerRequest] = try await supabase
             .from("lh_user_follower_requests")
             .select()
@@ -56,31 +57,31 @@ extension UserManager {
             .range(from: offset, to: offset + limit - 1)
             .execute()
             .value
-        return requests.map { $0.model }
+        return requests.map { $0 }
     }
 
     internal func createUserFollowerRequest(
         supabase: SupabaseClient,
-        followeeId: String
-    ) async throws -> LhUserFollowerRequest {
+        followeeId: UUID
+    ) async throws -> SupabaseLhUserFollowerRequest {
         let user = try await supabase.auth.session.user
-        let followerId = user.id.uuidString
-        let values: [String: Any] = [
+        let followerId = user.id
+        let values = [
             "follower": followerId,
-            "followee": followeeId
+            "followee": followeeId,
         ]
         let request: SupabaseLhUserFollowerRequest = try await supabase
             .from("lh_user_follower_requests")
-            .insert(values: values, returning: .representation)
+            .insert(values, returning: .representation)
             .single()
             .execute()
             .value
-        return request.model
+        return request
     }
 
     internal func deleteUserFollowerRequest(
         supabase: SupabaseClient,
-        requestId: String
+        requestId: UUID
     ) async throws {
         _ = try await supabase
             .from("lh_user_follower_requests")
@@ -91,22 +92,19 @@ extension UserManager {
 
     internal func acceptUserFollowerRequest(
         supabase: SupabaseClient,
-        request: LhUserFollowerRequest
-    ) async throws -> LhUserFollower {
-        guard let requestId = request.recordId?.recordName else {
-            throw UserManagerError.noRecordIdFoundForUser
-        }
-        try await deleteUserFollowerRequest(supabase: supabase, requestId: requestId)
-        let values: [String: Any] = [
+        request: SupabaseLhUserFollowerRequest
+    ) async throws -> SupabaseLhUserFollower {
+        try await deleteUserFollowerRequest(supabase: supabase, requestId: request.id)
+        let values = [
             "follower": request.follower,
-            "followee": request.followee
+            "followee": request.followee,
         ]
         let follower: SupabaseLhUserFollower = try await supabase
             .from("lh_user_followers")
-            .insert(values: values, returning: .representation)
+            .insert(values, returning: .representation)
             .single()
             .execute()
             .value
-        return follower.model
+        return follower
     }
 }
